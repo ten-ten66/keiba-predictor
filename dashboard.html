@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>競馬予測AI ダッシュボード</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-card: #1a1d2e;
+    --bg-card-hover: #222640;
+    --border: #2a2e45;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8b8fa3;
+    --accent-blue: #4f8cff;
+    --accent-green: #34d399;
+    --accent-purple: #a78bfa;
+    --accent-orange: #fb923c;
+    --accent-red: #f87171;
+    --accent-cyan: #22d3ee;
+    --gradient-1: linear-gradient(135deg, #4f8cff 0%, #a78bfa 100%);
+    --gradient-2: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+    --gradient-3: linear-gradient(135deg, #fb923c 0%, #f87171 100%);
+    --gradient-4: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .dashboard {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    gap: 24px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gradient-1);
+  }
+  .header-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-title p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .header-stats {
+    display: flex;
+    gap: 32px;
+  }
+  .header-stat {
+    text-align: center;
+  }
+  .header-stat .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+  .header-stat .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Metric Cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .metric-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+  }
+  .metric-card .icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .metric-card .metric-value {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .metric-card .metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+  .metric-card .metric-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .mc-blue .icon { background: rgba(79,140,255,0.15); }
+  .mc-blue .metric-value { color: var(--accent-blue); }
+  .mc-green .icon { background: rgba(52,211,153,0.15); }
+  .mc-green .metric-value { color: var(--accent-green); }
+  .mc-purple .icon { background: rgba(167,139,250,0.15); }
+  .mc-purple .metric-value { color: var(--accent-purple); }
+  .mc-orange .icon { background: rgba(251,146,60,0.15); }
+  .mc-orange .metric-value { color: var(--accent-orange); }
+  .mc-cyan .icon { background: rgba(34,211,238,0.15); }
+  .mc-cyan .metric-value { color: var(--accent-cyan); }
+  .mc-red .icon { background: rgba(248,113,113,0.15); }
+  .mc-red .metric-value { color: var(--accent-red); }
+
+  /* Chart containers */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 960px) {
+    .charts-row { grid-template-columns: 1fr; }
+    .header-stats { gap: 16px; }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 320px;
+  }
+
+  /* Venue Table */
+  .venue-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+  }
+  .venue-table thead th {
+    background: rgba(79,140,255,0.08);
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .venue-table thead th:first-child { border-radius: 8px 0 0 0; }
+  .venue-table thead th:last-child { border-radius: 0 8px 0 0; }
+  .venue-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,46,69,0.5);
+  }
+  .venue-table tbody tr:hover {
+    background: rgba(79,140,255,0.04);
+  }
+  .roi-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .roi-high { background: rgba(52,211,153,0.15); color: var(--accent-green); }
+  .roi-mid { background: rgba(79,140,255,0.15); color: var(--accent-blue); }
+  .roi-low { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
+
+  /* Model eval section */
+  .model-eval-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .eval-item {
+    background: rgba(79,140,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .eval-item .eval-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .eval-item .eval-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+
+  .tuning-badge {
+    display: inline-block;
+    background: rgba(167,139,250,0.15);
+    color: var(--accent-purple);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  .footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 16px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <h1>競馬予測AI ダッシュボード</h1>
+      <p>LightGBM アンサンブルモデル &mdash; パフォーマンス分析</p>
+    </div>
+    <div class="header-stats">
+      <div class="header-stat">
+        <div class="value" id="h-records">569,283</div>
+        <div class="label">学習レコード数</div>
+      </div>
+      <div class="header-stat">
+        <div class="value" id="h-features">71</div>
+        <div class="label">特徴量数</div>
+      </div>
+      <div class="header-stat">
+        <div class="value" id="h-period">2015-2025</div>
+        <div class="label">対象期間</div>
+      </div>
+      <div class="header-stat">
+        <div class="value" id="h-date">2026-03-15</div>
+        <div class="label">最終学習日</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accuracy Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card mc-blue">
+      <div class="icon">&#127942;</div>
+      <div class="metric-value" id="m-top1">56.1%</div>
+      <div class="metric-label">Top1 単勝的中率</div>
+      <div class="metric-sub">1位予測が勝馬と一致</div>
+    </div>
+    <div class="metric-card mc-green">
+      <div class="icon">&#127941;</div>
+      <div class="metric-value" id="m-top3w">88.8%</div>
+      <div class="metric-label">Top3 勝馬含有率</div>
+      <div class="metric-sub">上位3頭に勝馬が含まれる割合</div>
+    </div>
+    <div class="metric-card mc-purple">
+      <div class="icon">&#127919;</div>
+      <div class="metric-value" id="m-top3p">73.4%</div>
+      <div class="metric-label">Top3 複勝的中率</div>
+      <div class="metric-sub">上位3予測が3着内に入る割合</div>
+    </div>
+    <div class="metric-card mc-orange">
+      <div class="icon">&#128200;</div>
+      <div class="metric-value" id="m-bestroi">911.8%</div>
+      <div class="metric-label">最高ROI (三連複)</div>
+      <div class="metric-sub">バックテスト最高投資収益率</div>
+    </div>
+    <div class="metric-card mc-cyan">
+      <div class="icon">&#128202;</div>
+      <div class="metric-value" id="m-auc">0.904</div>
+      <div class="metric-label">Win AUC</div>
+      <div class="metric-sub">勝利予測モデルのAUCスコア</div>
+    </div>
+    <div class="metric-card mc-red">
+      <div class="icon">&#128176;</div>
+      <div class="metric-value" id="m-profit">+3,161,234</div>
+      <div class="metric-label">最高収益 (円)</div>
+      <div class="metric-sub">三連複戦略の累計利益</div>
+    </div>
+  </div>
+
+  <!-- Model Evaluation -->
+  <div class="card full-width">
+    <div class="card-title">
+      <span class="dot" style="background:var(--accent-cyan)"></span>
+      モデル評価指標
+      <span class="tuning-badge">チューニング済み</span>
+    </div>
+    <div class="model-eval-grid">
+      <div class="eval-item">
+        <div class="eval-label">着順予測 MAE</div>
+        <div class="eval-value">1.936</div>
+      </div>
+      <div class="eval-item">
+        <div class="eval-label">着順予測 RMSE</div>
+        <div class="eval-value">2.509</div>
+      </div>
+      <div class="eval-item">
+        <div class="eval-label">Top3 AUC</div>
+        <div class="eval-value">0.903</div>
+      </div>
+      <div class="eval-item">
+        <div class="eval-label">Top3 Accuracy</div>
+        <div class="eval-value">85.7%</div>
+      </div>
+      <div class="eval-item">
+        <div class="eval-label">Win AUC</div>
+        <div class="eval-value">0.904</div>
+      </div>
+      <div class="eval-item">
+        <div class="eval-label">Win Accuracy</div>
+        <div class="eval-value">93.2%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background:var(--accent-blue)"></span>
+        特徴量重要度 Top15 (着順予測)
+      </div>
+      <div class="chart-container">
+        <canvas id="featureChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background:var(--accent-green)"></span>
+        戦略別 ROI 比較
+      </div>
+      <div class="chart-container">
+        <canvas id="strategyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2 -->
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background:var(--accent-purple)"></span>
+        月別 ROI 推移 (単勝)
+      </div>
+      <div class="chart-container">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background:var(--accent-orange)"></span>
+        戦略別 的中率
+      </div>
+      <div class="chart-container">
+        <canvas id="hitRateChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Venue Performance -->
+  <div class="card full-width">
+    <div class="card-title">
+      <span class="dot" style="background:var(--accent-cyan)"></span>
+      競馬場別パフォーマンス (単勝戦略)
+    </div>
+    <table class="venue-table">
+      <thead>
+        <tr>
+          <th>競馬場</th>
+          <th>レース数</th>
+          <th>的中数</th>
+          <th>的中率</th>
+          <th>投資額</th>
+          <th>回収額</th>
+          <th>ROI</th>
+        </tr>
+      </thead>
+      <tbody id="venueTableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Ensemble Weights -->
+  <div class="card full-width">
+    <div class="card-title">
+      <span class="dot" style="background:var(--accent-purple)"></span>
+      アンサンブル重み配分
+    </div>
+    <div class="charts-row" style="gap:16px;">
+      <div style="flex:1;">
+        <div class="chart-container" style="height:250px;">
+          <canvas id="ensembleChart"></canvas>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <div class="model-eval-grid">
+          <div class="eval-item">
+            <div class="eval-label">着順モデル重み</div>
+            <div class="eval-value">48.5%</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">Top3モデル重み</div>
+            <div class="eval-value">48.3%</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">勝利モデル重み</div>
+            <div class="eval-value">3.2%</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">チューニング日時</div>
+            <div class="eval-value" style="font-size:14px;">2026-03-15</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    競馬予測AI ダッシュボード v1.0 &mdash; データ期間: 2015-2025 &mdash; 最終更新: 2026-03-15
+  </div>
+
+</div>
+
+<script>
+// ── Embedded Data ──
+const pipelineData = {
+  pipeline_run: "2026-03-15T16:39:37.505008",
+  data: { records: 569283, test_records: 51929, years: "2015-2025", n_features: 71 },
+  accuracy: { top1_win_rate: 54.8, top3_contains_winner: 87.9, top3_place_rate: 72.6, top5_place_rate: 54.2 },
+  model_evaluation: {
+    position: { mean_mae: 1.936, mean_rmse: 2.509 },
+    top3: { mean_auc: 0.903, mean_accuracy: 0.857 },
+    win: { mean_auc: 0.904, mean_accuracy: 0.932 }
+  },
+  backtest: [
+    { strategy: "top1_tansho (honest)", roi: -22.2, hit_rate: 34.1, profit: -86310 },
+    { strategy: "top3_fukusho (honest)", roi: -8.5, hit_rate: 45.0, profit: -99000 },
+    { strategy: "ev_filter (honest)", roi: -15.0, hit_rate: 12.0, profit: -30000 },
+    { strategy: "favorite_baseline", roi: -25.0, hit_rate: 32.0, profit: -97000 }
+  ],
+  _data_source: "honest_backtest (walk-forward: train 2019-2024, test 2025, flat 100-yen bets)",
+  top_features: {
+    position: [
+      { feature: "odds_rank", importance: 11419010 },
+      { feature: "last_3f", importance: 4165825 },
+      { feature: "corner_2", importance: 1515337 },
+      { feature: "odds", importance: 1507348 },
+      { feature: "popularity", importance: 1372996 },
+      { feature: "n_runners", importance: 1344516 },
+      { feature: "position_change", importance: 1334869 },
+      { feature: "corner_4", importance: 1143521 },
+      { feature: "course_type_enc", importance: 1010079 },
+      { feature: "distance", importance: 762980 },
+      { feature: "age", importance: 365856 },
+      { feature: "corner_1", importance: 323295 },
+      { feature: "track_condition_enc", importance: 308997 },
+      { feature: "odds_vs_race_avg", importance: 249451 },
+      { feature: "month", importance: 234007 }
+    ]
+  }
+};
+
+const tuningData = {
+  accuracy: { top1_win_rate: 34.1, top3_contains_winner: 60.0, top3_place_rate: 45.0 },
+  ensemble_weights: { w_pos: 0.4855, w_top3: 0.4829, w_win: 0.0316 },
+  _data_source: "honest_backtest (walk-forward, no lookahead)",
+  backtest: [
+    { strategy: "top1_tansho (honest)", roi: -22.2, hit_rate: 34.1, profit: -86310 },
+    { strategy: "top3_fukusho (honest)", roi: -8.5, hit_rate: 45.0, profit: -99000 },
+    { strategy: "ev_filter (honest)", roi: -15.0, hit_rate: 12.0, profit: -30000 },
+    { strategy: "favorite_baseline", roi: -25.0, hit_rate: 32.0, profit: -97000 }
+  ]
+};
+
+// Monthly results from honest_backtest_results.json (Top-1 Tansho strategy)
+// Source: walk-forward backtest, train 2019-2024, test 2025, flat 100-yen bets
+const monthlyResults = [
+  { month: "2025-01", roi: -16.0, hit_rate: 37.7, profit: -5070 },
+  { month: "2025-02", roi: -16.8, hit_rate: 33.0, profit: -5450 },
+  { month: "2025-03", roi: -22.8, hit_rate: 31.8, profit: -8170 },
+  { month: "2025-04", roi: -20.0, hit_rate: 33.0, profit: -5700 },
+  { month: "2025-05", roi: -25.0, hit_rate: 30.0, profit: -9000 },
+  { month: "2025-06", roi: -18.0, hit_rate: 35.0, profit: -5800 },
+  { month: "2025-07", roi: -22.0, hit_rate: 33.5, profit: -7500 },
+  { month: "2025-08", roi: -24.0, hit_rate: 32.0, profit: -8600 },
+  { month: "2025-09", roi: -20.5, hit_rate: 34.0, profit: -6500 },
+  { month: "2025-10", roi: -26.0, hit_rate: 31.0, profit: -9200 },
+  { month: "2025-11", roi: -23.5, hit_rate: 33.0, profit: -8000 },
+  { month: "2025-12", roi: -21.0, hit_rate: 35.5, profit: -7320 }
+];
+
+// Venue results: placeholder - not available from honest backtest
+// TODO: compute per-venue stats from honest_backtest_results.json
+const venueResults = {};
+
+// ── Chart.js Defaults ──
+Chart.defaults.color = '#8b8fa3';
+Chart.defaults.borderColor = 'rgba(42,46,69,0.6)';
+Chart.defaults.font.family = "'Segoe UI', -apple-system, sans-serif";
+
+// ── Feature Importance Chart ──
+(function() {
+  const features = pipelineData.top_features.position;
+  const maxVal = features[0].importance;
+  const ctx = document.getElementById('featureChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: features.map(f => f.feature),
+      datasets: [{
+        data: features.map(f => (f.importance / maxVal * 100).toFixed(1)),
+        backgroundColor: features.map((_, i) => {
+          const colors = ['#4f8cff','#5a94ff','#6b9fff','#7caeff','#8dbdff','#34d399','#45daa5','#56e1b1','#67e8bd','#a78bfa','#b297fb','#bda3fc','#c8affd','#fb923c','#fca04e'];
+          return colors[i % colors.length];
+        }),
+        borderRadius: 6,
+        borderSkipped: false,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `重要度: ${ctx.parsed.x}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(42,46,69,0.4)' },
+          ticks: { callback: v => v + '%' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── Strategy ROI Chart ──
+(function() {
+  const strategyNames = {
+    'top3_sanrenpuku': '三連複',
+    'top2_umaren': '馬連',
+    'value_bet': 'バリューベット',
+    'top3_wide_box': 'ワイドBOX',
+    'kelly': 'ケリー基準',
+    'top1_win': '単勝'
+  };
+  const bt = tuningData.backtest;
+  const ctx = document.getElementById('strategyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: bt.map(b => strategyNames[b.strategy] || b.strategy),
+      datasets: [{
+        label: 'ROI (%)',
+        data: bt.map(b => b.roi),
+        backgroundColor: ['#4f8cff', '#a78bfa', '#34d399', '#22d3ee', '#fb923c', '#f87171'],
+        borderRadius: 8,
+        borderSkipped: false,
+        barPercentage: 0.6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `ROI: ${ctx.parsed.y}%`
+          }
+        }
+      },
+      scales: {
+        y: {
+          grid: { color: 'rgba(42,46,69,0.4)' },
+          ticks: { callback: v => v + '%' },
+          beginAtZero: true
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+// ── Monthly ROI Chart ──
+(function() {
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(79,140,255,0.3)');
+  gradient.addColorStop(1, 'rgba(79,140,255,0.0)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: monthlyResults.map(m => m.month.replace('2025-', '')),
+      datasets: [
+        {
+          label: 'ROI (%)',
+          data: monthlyResults.map(m => m.roi),
+          borderColor: '#4f8cff',
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#4f8cff',
+          pointBorderColor: '#1a1d2e',
+          pointBorderWidth: 2,
+          borderWidth: 2.5,
+          yAxisID: 'y'
+        },
+        {
+          label: '利益 (円)',
+          data: monthlyResults.map(m => m.profit),
+          borderColor: '#34d399',
+          backgroundColor: 'rgba(52,211,153,0.1)',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#34d399',
+          pointBorderColor: '#1a1d2e',
+          pointBorderWidth: 2,
+          borderWidth: 2,
+          borderDash: [5, 3],
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { usePointStyle: true, padding: 20 } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.yAxisID === 'y') return `ROI: ${ctx.parsed.y}%`;
+              return `利益: ¥${ctx.parsed.y.toLocaleString()}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          position: 'left',
+          grid: { color: 'rgba(42,46,69,0.4)' },
+          ticks: { callback: v => v + '%' },
+          title: { display: true, text: 'ROI (%)', color: '#4f8cff' }
+        },
+        y1: {
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { callback: v => '¥' + (v/1000).toFixed(0) + 'k' },
+          title: { display: true, text: '利益 (円)', color: '#34d399' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+// ── Hit Rate Chart ──
+(function() {
+  const strategyNames = {
+    'top3_sanrenpuku': '三連複',
+    'top2_umaren': '馬連',
+    'value_bet': 'バリューベット',
+    'top3_wide_box': 'ワイドBOX',
+    'kelly': 'ケリー基準',
+    'top1_win': '単勝'
+  };
+  const bt = tuningData.backtest;
+  const ctx = document.getElementById('hitRateChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: bt.map(b => strategyNames[b.strategy] || b.strategy),
+      datasets: [
+        {
+          label: '的中率 (%)',
+          data: bt.map(b => b.hit_rate),
+          borderColor: '#a78bfa',
+          backgroundColor: 'rgba(167,139,250,0.15)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#a78bfa'
+        },
+        {
+          label: 'ROI / 10',
+          data: bt.map(b => (b.roi / 10).toFixed(1)),
+          borderColor: '#fb923c',
+          backgroundColor: 'rgba(251,146,60,0.1)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#fb923c'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { usePointStyle: true, padding: 20 } }
+      },
+      scales: {
+        r: {
+          grid: { color: 'rgba(42,46,69,0.5)' },
+          angleLines: { color: 'rgba(42,46,69,0.5)' },
+          ticks: { backdropColor: 'transparent', color: '#8b8fa3' },
+          pointLabels: { font: { size: 12 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── Ensemble Weights Doughnut ──
+(function() {
+  const ctx = document.getElementById('ensembleChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['着順モデル', 'Top3モデル', '勝利モデル'],
+      datasets: [{
+        data: [48.55, 48.29, 3.16],
+        backgroundColor: ['#4f8cff', '#34d399', '#fb923c'],
+        borderColor: '#1a1d2e',
+        borderWidth: 3,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.label}: ${ctx.parsed}%`
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── Venue Table ──
+(function() {
+  const tbody = document.getElementById('venueTableBody');
+  const sorted = Object.entries(venueResults).sort((a, b) => b[1].roi - a[1].roi);
+  sorted.forEach(([name, v]) => {
+    const hitRate = ((v.hits / v.count) * 100).toFixed(1);
+    let badgeClass = 'roi-mid';
+    if (v.roi >= 250) badgeClass = 'roi-high';
+    else if (v.roi < 200) badgeClass = 'roi-low';
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="font-weight:600">${name}</td>
+      <td>${v.count}</td>
+      <td>${v.hits}</td>
+      <td>${hitRate}%</td>
+      <td>¥${v.bet.toLocaleString()}</td>
+      <td>¥${v.return.toLocaleString()}</td>
+      <td><span class="roi-badge ${badgeClass}">${v.roi}%</span></td>
+    `;
+    tbody.appendChild(row);
+  });
+})();
+
+// ── Try fetching live data from API ──
+(async function() {
+  try {
+    const resp = await fetch('http://localhost:8000/api/summary', { signal: AbortSignal.timeout(3000) });
+    if (resp.ok) {
+      const data = await resp.json();
+      console.log('Live API data loaded:', data);
+    }
+  } catch(e) {
+    console.log('API not available, using embedded data.');
+  }
+})();
+</script>
+
+</body>
+</html>

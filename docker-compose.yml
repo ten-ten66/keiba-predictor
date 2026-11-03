@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  keiba-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped
+    environment:
+      - KEIBA_JWT_SECRET=${KEIBA_JWT_SECRET:-change-me-in-production}

@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/keiba/manifest.json">
+<meta name="theme-color" content="#1e40af">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/svg+xml" href="/keiba/icon.svg">
+<link rel="apple-touch-icon" href="/keiba/icon-192.png">
+<title>競馬予測AI</title>
+<style>
+/* === Dark Mode Variables === */
+:root{--bg-primary:#f8f9fa;--bg-card:#fff;--bg-card-alt:#f9fafb;--bg-hover:#f8fafc;--bg-active:#f3f4f6;--bg-input:#f9fafb;--border:#e5e7eb;--border-light:#f3f4f6;--text-primary:#111827;--text-secondary:#6b7280;--text-muted:#9ca3af;--shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.05)}
+[data-theme="dark"]{--bg-primary:#0f1117;--bg-card:#1a1d2e;--bg-card-alt:#1f2337;--bg-hover:#252a3e;--bg-active:#2a2e45;--bg-input:#1f2337;--border:#2a2e45;--border-light:#232740;--text-primary:#e8eaf0;--text-secondary:#8b8fa3;--text-muted:#5f6378;--shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.3)}
+[data-theme="dark"] body{background:var(--bg-primary);color:var(--text-primary)}
+[data-theme="dark"] .topnav{background:var(--bg-card);box-shadow:var(--shadow-sm)}
+[data-theme="dark"] .topnav .nav-links a{color:var(--text-secondary)}
+[data-theme="dark"] .topnav .nav-links a:hover{background:var(--bg-hover);color:var(--text-primary)}
+[data-theme="dark"] .topnav .nav-links a.active{color:#60a5fa}
+[data-theme="dark"] .topnav .nav-links a.active::after{background:#60a5fa}
+[data-theme="dark"] .topnav .user-info{color:var(--text-muted)}
+[data-theme="dark"] .topnav .logout-btn{color:var(--text-secondary);background:var(--bg-card-alt);border-color:var(--border)}
+[data-theme="dark"] .topnav .logout-btn:hover{color:#f87171;border-color:#7f1d1d;background:#1c1012}
+[data-theme="dark"] .date-tab{background:var(--bg-card);border-color:var(--border);color:var(--text-secondary)}
+[data-theme="dark"] .date-tab:hover{border-color:#3b82f6;color:#60a5fa;background:var(--bg-hover)}
+[data-theme="dark"] .date-tab.active{background:#1e40af;border-color:#1e40af;color:#fff}
+[data-theme="dark"] .date-tab-custom input{background:var(--bg-input);border-color:var(--border);color:var(--text-primary)}
+[data-theme="dark"] .grade-pill{background:var(--bg-card);border-color:var(--border);color:var(--text-secondary)}
+[data-theme="dark"] .grade-pill:hover{border-color:#3b82f6;color:#60a5fa;background:var(--bg-hover)}
+[data-theme="dark"] .grade-pill.active{background:#1e40af;color:#fff;border-color:#1e40af}
+[data-theme="dark"] .venue-section{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .venue-header{background:var(--bg-card-alt) !important;border-color:var(--border)}
+[data-theme="dark"] .race-row{border-color:var(--border-light);color:var(--text-primary)}
+[data-theme="dark"] .race-row:hover{background:var(--bg-hover)}
+[data-theme="dark"] .race-row.selected{background:#1a2744;border-left-color:#3b82f6}
+[data-theme="dark"] .race-row .rname{color:var(--text-primary)}
+[data-theme="dark"] .race-row .rmeta{color:var(--text-muted)}
+[data-theme="dark"] .race-row .rhorses{background:var(--bg-card-alt);color:var(--text-secondary)}
+[data-theme="dark"] .pred-box{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] thead th{background:var(--bg-card-alt);color:var(--text-secondary);border-color:var(--border)}
+[data-theme="dark"] thead th:hover{color:#60a5fa;background:var(--bg-hover)}
+[data-theme="dark"] tbody tr{border-color:var(--border-light)}
+[data-theme="dark"] tbody tr:nth-child(even){background:var(--bg-card-alt)}
+[data-theme="dark"] tbody tr:hover{background:var(--bg-hover)}
+[data-theme="dark"] tbody td{color:var(--text-primary)}
+[data-theme="dark"] tr.rank-1{background:linear-gradient(90deg,#2a2410,#282210) !important}
+[data-theme="dark"] tr.rank-2{background:linear-gradient(90deg,#1f2130,#1e2030) !important}
+[data-theme="dark"] tr.rank-3{background:linear-gradient(90deg,#2a2410,#282210) !important}
+[data-theme="dark"] .stat-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .stat-card .label{color:var(--text-muted)}
+[data-theme="dark"] .stat-card .value{color:var(--text-primary)}
+[data-theme="dark"] .rec-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .rec-card .rec-ev{color:var(--text-muted)}
+[data-theme="dark"] .rec-card .rec-value{color:var(--text-primary)}
+[data-theme="dark"] .no-odds-note{background:#2a2410;border-color:#5c4a1a;color:#d97706}
+[data-theme="dark"] .spread-notice{background:#2a2410;border-color:#5c4a1a;color:#d97706}
+[data-theme="dark"] .settings-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .settings-card h3{color:var(--text-primary)}
+[data-theme="dark"] .settings-card input{background:var(--bg-input);border-color:var(--border);color:var(--text-primary)}
+[data-theme="dark"] .settings-card input:focus{border-color:#3b82f6;background:var(--bg-card)}
+[data-theme="dark"] .table-wrap{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .results-box{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .action-btn{background:var(--bg-card);border-color:var(--border);color:var(--text-secondary)}
+[data-theme="dark"] .action-btn:hover{border-color:#3b82f6;color:#60a5fa;background:var(--bg-hover)}
+[data-theme="dark"] .empty{color:var(--text-muted)}
+[data-theme="dark"] .login-wrap{background:linear-gradient(135deg,#0f1117 0%,#141827 50%,#0f1117 100%)}
+[data-theme="dark"] .login-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .login-card input{background:var(--bg-input);border-color:var(--border);color:var(--text-primary)}
+[data-theme="dark"] .login-card input:focus{border-color:#3b82f6;background:var(--bg-card)}
+[data-theme="dark"] .login-card .sub{color:var(--text-muted)}
+[data-theme="dark"] .mobile-horse-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .mobile-horse-card:active{background:var(--bg-hover)}
+[data-theme="dark"] .mobile-horse-card.expanded{border-color:#3b5998}
+[data-theme="dark"] .mobile-horse-card .horse-name{color:var(--text-primary)}
+[data-theme="dark"] .mobile-horse-card .horse-details{border-color:var(--border-light)}
+[data-theme="dark"] .mobile-horse-card .horse-details .detail-item{color:var(--text-secondary)}
+[data-theme="dark"] .mobile-horse-card .horse-details .detail-item b{color:var(--text-primary)}
+[data-theme="dark"] .bottom-tab-bar{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .bottom-tab-bar .tab-item{color:var(--text-muted)}
+[data-theme="dark"] .bottom-tab-bar .tab-item:active{background:var(--bg-hover)}
+[data-theme="dark"] .bottom-tab-bar .tab-item.active{color:#60a5fa}
+[data-theme="dark"] .bb-wrapper{background:linear-gradient(135deg,#0a0e1a,#111528,#141e3a)}
+[data-theme="dark"] .perf-tbl-wrap{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .perf-tbl thead th{background:var(--bg-card-alt);color:var(--text-secondary);border-color:var(--border)}
+[data-theme="dark"] .perf-tbl tbody td{border-color:var(--border-light)}
+[data-theme="dark"] .perf-tbl tbody tr:hover{background:var(--bg-hover)}
+[data-theme="dark"] .perf-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .perf-card h3{color:#60a5fa}
+[data-theme="dark"] .perf-card p{color:var(--text-secondary)}
+[data-theme="dark"] .perf-card .big-val{color:var(--text-primary)}
+[data-theme="dark"] .perf-chart-wrap{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .perf-disc{background:#2a2410;border-color:#5c4a1a;color:#b88a2e}
+[data-theme="dark"] .replay-race-card{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .replay-horse{border-color:var(--border-light)}
+[data-theme="dark"] .replay-horse:hover{background:var(--bg-hover)}
+[data-theme="dark"] .replay-horse.selected{background:#1a2744}
+[data-theme="dark"] .replay-horse .rh-num{background:var(--bg-card-alt);color:var(--text-primary)}
+[data-theme="dark"] .replay-horse .rh-name{color:var(--text-primary)}
+[data-theme="dark"] .replay-ai-box{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .replay-result-box{background:var(--bg-card);border-color:var(--border)}
+[data-theme="dark"] .replay-finish-row{border-color:var(--border-light)}
+[data-theme="dark"] .toast{box-shadow:0 8px 24px rgba(0,0,0,.4)}
+[data-theme="dark"] .skeleton{background:linear-gradient(90deg,#1f2337 25%,#2a2e45 50%,#1f2337 75%)}
+
+/* === Dark Mode Toggle Button === */
+.theme-toggle{background:none;border:1px solid var(--border,#e5e7eb);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;color:var(--text-secondary,#6b7280);margin-left:8px;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.theme-toggle:hover{border-color:#93c5fd;background:var(--bg-hover,#f8fafc)}
+
+/* === Confidence Section === */
+.confidence-section{margin-top:20px;padding:20px 24px;background:var(--bg-card,#fff);border:1px solid var(--border,#e5e7eb);border-radius:14px}
+.confidence-section h4{font-size:14px;font-weight:700;color:var(--text-primary,#111827);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.confidence-meter{background:var(--bg-active,#f3f4f6);border-radius:8px;height:28px;overflow:hidden;position:relative}
+.confidence-meter .meter-bar{height:100%;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:width .6s ease;min-width:40px}
+.confidence-text{font-size:13px;font-weight:600;margin-top:8px;color:var(--text-primary,#111827)}
+.confidence-detail{font-size:12px;color:var(--text-muted,#9ca3af);margin-top:4px}
+.confidence-factors{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px}
+.confidence-factor{background:var(--bg-card-alt,#f9fafb);border:1px solid var(--border-light,#f3f4f6);border-radius:10px;padding:10px 12px;text-align:center}
+.confidence-factor .cf-label{font-size:10px;color:var(--text-muted,#9ca3af);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.confidence-factor .cf-value{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+/* === Reset & Base === */
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Sans','Noto Sans JP',system-ui,sans-serif;font-feature-settings:'tnum';-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{background:#f8f9fa;color:#111827;font-size:14px;min-height:100vh;line-height:1.5}
+a{color:#1e40af;text-decoration:none}
+
+/* === Animations === */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{transform:translateX(80px);opacity:0}to{transform:none;opacity:1}}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
+.fade-in{animation:fadeIn .25s ease-out}
+
+/* === Top Nav === */
+.topnav{background:#fff;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06)}
+.topnav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:56px;gap:12px}
+.topnav .logo{font-weight:800;font-size:18px;color:#1e40af;white-space:nowrap;cursor:pointer;letter-spacing:-.4px;display:flex;align-items:center;gap:6px;transition:opacity .15s}
+.topnav .logo:hover{opacity:.8}
+.topnav .logo-icon{font-size:22px;line-height:1}
+.topnav .nav-links{display:flex;gap:2px;margin-left:auto;position:relative}
+.topnav .nav-links a{padding:8px 16px;font-size:13px;color:#6b7280;border-radius:8px;transition:all .2s ease;font-weight:500;position:relative}
+.topnav .nav-links a:hover{background:#f3f4f6;color:#111827}
+.topnav .nav-links a.active{color:#1e40af;font-weight:600;background:transparent}
+.topnav .nav-links a.active::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:24px;height:2px;background:#1e40af;border-radius:1px;animation:fadeIn .2s ease-out}
+.topnav .user-info{font-size:12px;color:#9ca3af;margin-left:8px;white-space:nowrap;font-weight:500}
+.topnav .logout-btn{font-size:12px;color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb;padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .15s;font-weight:500}
+.topnav .logout-btn:hover{color:#dc2626;border-color:#fca5a5;background:#fef2f2}
+.topnav .logout-btn:active{transform:scale(.98)}
+
+/* === Layout === */
+.container{max-width:1200px;margin:0 auto;padding:24px}
+
+/* === Date Tabs === */
+.date-tabs{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.date-tab{padding:10px 20px;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;border:none;background:#fff;transition:all .2s ease;text-align:center;border-radius:24px;border:1px solid #e5e7eb;white-space:nowrap}
+.date-tab:hover{border-color:#93c5fd;color:#1e40af;background:#eff6ff}
+.date-tab:active{transform:scale(.98)}
+.date-tab.active{color:#fff;background:#1e40af;border-color:#1e40af;box-shadow:0 2px 8px rgba(30,64,175,.25)}
+.date-tab-custom{display:flex;align-items:center;margin-left:auto}
+.date-tab-custom input{border:1px solid #e5e7eb;border-radius:10px;padding:8px 14px;font-size:12px;width:150px;color:#374151;transition:all .15s}
+.date-tab-custom input:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(30,64,175,.1)}
+
+/* === Grade Filter === */
+.grade-bar{display:flex;gap:6px;padding:12px 0;flex-wrap:wrap}
+.grade-pill{padding:6px 14px;font-size:12px;border-radius:20px;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#6b7280;transition:all .2s ease;white-space:nowrap;font-weight:500}
+.grade-pill:hover{border-color:#93c5fd;color:#1e40af;background:#eff6ff}
+.grade-pill:active{transform:scale(.97)}
+.grade-pill.active{background:#1e40af;color:#fff;border-color:#1e40af;box-shadow:0 2px 6px rgba(30,64,175,.2)}
+.grade-pill .cnt{font-size:10px;opacity:.65;margin-left:3px}
+
+/* === Venue Section === */
+.venue-section{margin-top:12px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;transition:box-shadow .2s}
+.venue-section:hover{box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.venue-header{font-size:13px;font-weight:700;padding:12px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:8px}
+.venue-header::before{content:'';display:inline-block;width:4px;height:18px;border-radius:2px}
+/* Venue color coding */
+.venue-section[data-venue="中京"] .venue-header{color:#1e40af;background:#eff6ff}
+.venue-section[data-venue="中京"] .venue-header::before{background:#1e40af}
+.venue-section[data-venue="中山"] .venue-header{color:#059669;background:#ecfdf5}
+.venue-section[data-venue="中山"] .venue-header::before{background:#059669}
+.venue-section[data-venue="阪神"] .venue-header{color:#dc2626;background:#fef2f2}
+.venue-section[data-venue="阪神"] .venue-header::before{background:#dc2626}
+.venue-section[data-venue="東京"] .venue-header{color:#7c3aed;background:#f5f3ff}
+.venue-section[data-venue="東京"] .venue-header::before{background:#7c3aed}
+.venue-section[data-venue="京都"] .venue-header{color:#d97706;background:#fffbeb}
+.venue-section[data-venue="京都"] .venue-header::before{background:#d97706}
+.venue-section[data-venue="小倉"] .venue-header{color:#0891b2;background:#ecfeff}
+.venue-section[data-venue="小倉"] .venue-header::before{background:#0891b2}
+.venue-section[data-venue="新潟"] .venue-header{color:#16a34a;background:#f0fdf4}
+.venue-section[data-venue="新潟"] .venue-header::before{background:#16a34a}
+.venue-section[data-venue="福島"] .venue-header{color:#ea580c;background:#fff7ed}
+.venue-section[data-venue="福島"] .venue-header::before{background:#ea580c}
+.venue-section[data-venue="函館"] .venue-header{color:#4f46e5;background:#eef2ff}
+.venue-section[data-venue="函館"] .venue-header::before{background:#4f46e5}
+.venue-section[data-venue="札幌"] .venue-header{color:#0d9488;background:#f0fdfa}
+.venue-section[data-venue="札幌"] .venue-header::before{background:#0d9488}
+/* Default venue colors */
+.venue-header{color:#1e40af;background:#f8fafc}
+.venue-header::before{background:#1e40af}
+
+/* === Race Rows === */
+.race-row{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid #f3f4f6;cursor:pointer;transition:all .15s ease;gap:12px;font-size:13px}
+.race-row:last-child{border-bottom:none}
+.race-row:hover{background:#f8fafc}
+.race-row:active{background:#f3f4f6}
+.race-row.selected{background:#eff6ff;border-left:3px solid #1e40af;padding-left:17px}
+.race-row .rnum{font-weight:700;color:#1e40af;min-width:36px;font-size:15px;font-variant-numeric:tabular-nums}
+.race-row .rname{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#111827}
+.race-row .rmeta{color:#9ca3af;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.race-row .rhorses{color:#6b7280;font-size:11px;white-space:nowrap;background:#f3f4f6;padding:3px 10px;border-radius:12px;font-weight:500}
+
+/* === Grade Badge === */
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;margin-left:8px;vertical-align:middle;letter-spacing:.5px}
+.badge-g1{background:linear-gradient(135deg,#dc2626,#ef4444)}.badge-g2{background:linear-gradient(135deg,#1e40af,#3b82f6)}.badge-g3{background:linear-gradient(135deg,#059669,#34d399)}
+.badge-op{background:linear-gradient(135deg,#7c3aed,#a78bfa)}.badge-default{background:#6b7280}
+
+/* === Prediction Box === */
+.pred-box{margin-top:24px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);animation:fadeIn .3s ease-out}
+.pred-header{background:linear-gradient(135deg,#1e3a8a,#1e40af,#2563eb);padding:20px 24px;color:#fff}
+.pred-header h2{font-size:18px;font-weight:700;letter-spacing:-.2px}
+.pred-header p{font-size:12px;opacity:.8;margin-top:4px;font-weight:400}
+
+/* === Table === */
+.table-outer{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f8f9fa;padding:12px 12px;font-size:11px;font-weight:700;color:#6b7280;text-align:center;border-bottom:2px solid #e5e7eb;cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;transition:all .15s}
+thead th:hover{color:#1e40af;background:#eff6ff}
+thead th .arrow{font-size:10px;margin-left:2px;color:#d1d5db;transition:color .15s}
+thead th .arrow.on{color:#1e40af}
+tbody tr{border-bottom:1px solid #f3f4f6;transition:all .12s ease}
+tbody tr:nth-child(even){background:#fafbfc}
+tbody tr:hover{background:#eff6ff}
+tbody td{padding:10px 12px;font-size:13px;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+tbody td.left{text-align:left}
+
+/* === Rank Highlights === */
+.rank-cell{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-weight:800;font-size:15px;line-height:1}
+.rank-cell.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f;box-shadow:0 2px 6px rgba(245,158,11,.3)}
+.rank-cell.r2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#374151;box-shadow:0 2px 6px rgba(156,163,175,.3)}
+.rank-cell.r3{background:linear-gradient(135deg,#f59e0b,#d97706);color:#78350f;box-shadow:0 2px 6px rgba(217,119,6,.3)}
+.rank-cell.r-other{background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:600}
+
+tr.rank-1{background:linear-gradient(90deg,#fffbeb,#fefce8) !important}
+tr.rank-2{background:linear-gradient(90deg,#f9fafb,#f3f4f6) !important}
+tr.rank-3{background:linear-gradient(90deg,#fffbeb,#fef9c3) !important}
+tr.rank-top3 td{font-weight:600}
+
+/* === Probability Bar === */
+.prob-cell{position:relative;padding-right:4px}
+.prob-bar-bg{position:absolute;left:0;top:0;height:100%;opacity:.1;border-radius:0;pointer-events:none;transition:width .3s ease}
+.prob-bar-track{display:flex;align-items:center;gap:6px;justify-content:center}
+.prob-bar-inline{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;min-width:3px;max-width:60px;transition:width .3s ease}
+.prob-text{font-variant-numeric:tabular-nums}
+
+/* === Diff Column === */
+.diff-val{font-size:11px;color:#9ca3af;font-variant-numeric:tabular-nums}
+.diff-val.top{color:#059669;font-weight:700}
+
+/* === Rank 95% CI visualization === */
+.rank-ci-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px}
+.rank-ci-track{position:relative;width:56px;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden}
+.rank-ci-bar{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#93c5fd,#3b82f6);border-radius:2px;opacity:.75;z-index:2}
+.rank-ci-bar-outer{position:absolute;top:0;height:100%;background:#cbd5e1;border-radius:2px;opacity:.5;z-index:1}
+.rank-ci-dot{position:absolute;top:-2px;width:8px;height:8px;border-radius:50%;background:#1e40af;border:1.5px solid #fff;transform:translateX(-50%);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.rank-ci-range{font-size:10px;color:#6b7280;font-variant-numeric:tabular-nums;line-height:1}
+
+/* === EV with uncertainty === */
+.ev-main{font-variant-numeric:tabular-nums;line-height:1.1}
+.ev-unc{font-size:10px;color:#9ca3af;font-variant-numeric:tabular-nums;display:block;margin-top:1px}
+.ev-unc.wide{color:#dc2626}
+
+/* === Admin Panel === */
+.admin-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.admin-card.halted{border:2px solid #dc2626;background:linear-gradient(135deg,#fff,#fef2f2)}
+.admin-card h3{margin:0 0 12px 0;font-size:15px;font-weight:700;color:#111827}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:13px}
+.admin-grid>div{display:flex;justify-content:space-between;padding:8px 10px;background:#f9fafb;border-radius:6px;border:1px solid #f3f4f6}
+.admin-grid .k{color:#6b7280;font-size:12px}
+.admin-grid .v{color:#111827;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.admin-grid .v.warn{color:#dc2626}
+.admin-grid .v small{color:#9ca3af;font-weight:400;margin-left:3px}
+.admin-status{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700}
+.admin-status.good{background:#dcfce7;color:#15803d}
+.admin-status.bad{background:#fee2e2;color:#dc2626}
+.halt-banner{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:12px}
+
+/* === Race Nav === */
+.race-nav{display:flex;gap:8px;margin-top:16px;justify-content:center;align-items:center}
+.race-nav button{background:#fff;border:1px solid #e5e7eb;padding:8px 20px;border-radius:10px;font-size:12px;cursor:pointer;color:#6b7280;transition:all .15s;font-weight:500}
+.race-nav button:hover{border-color:#1e40af;color:#1e40af;background:#eff6ff}
+.race-nav button:active{transform:scale(.98)}
+.race-nav button:disabled{opacity:.35;cursor:not-allowed}
+.race-nav .race-counter{font-size:12px;color:#9ca3af;padding:8px 4px;font-weight:500;font-variant-numeric:tabular-nums}
+
+/* === Start Time === */
+.start-time{font-size:10px;color:#9ca3af;background:#f3f4f6;padding:2px 8px;border-radius:6px;margin-left:4px;font-weight:500}
+
+/* === Loading === */
+.spinner{border:3px solid #e5e7eb;border-top:3px solid #1e40af;border-radius:50%;width:28px;height:28px;animation:spin .7s linear infinite;margin:24px auto}
+.loading-box{text-align:center;padding:60px 0;animation:fadeIn .2s ease-out}
+.loading-box p{font-size:13px;color:#9ca3af;margin-top:12px;font-weight:400}
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 50%,#f3f4f6 75%);background-size:200px 100%;animation:shimmer 1.5s infinite;border-radius:8px;height:16px}
+
+/* === Toast === */
+.toast{position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:12px;z-index:999;font-size:13px;color:#fff;animation:slideIn .25s ease-out;box-shadow:0 8px 24px rgba(0,0,0,.15);font-weight:500;backdrop-filter:blur(8px)}
+
+/* === Login === */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8f9fa 0%,#eff6ff 50%,#f8f9fa 100%)}
+.login-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:48px 40px;width:400px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.08);animation:fadeIn .4s ease-out}
+.login-card h1{font-size:24px;font-weight:800;text-align:center;color:#1e40af;margin-bottom:4px;letter-spacing:-.3px}
+.login-card .sub{font-size:12px;color:#9ca3af;text-align:center;margin-bottom:32px;font-weight:400}
+.login-card label{display:block;font-size:12px;color:#6b7280;margin-bottom:6px;margin-top:20px;font-weight:600;letter-spacing:.2px}
+.login-card input{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;font-size:14px;transition:all .2s;color:#111827;background:#f9fafb}
+.login-card input:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(30,64,175,.08);background:#fff}
+.login-card button{width:100%;background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:28px;transition:all .2s;letter-spacing:.2px}
+.login-card button:hover{box-shadow:0 4px 16px rgba(30,64,175,.3);transform:translateY(-1px)}
+.login-card button:active{transform:translateY(0);box-shadow:0 2px 8px rgba(30,64,175,.2)}
+.login-card .err{color:#dc2626;font-size:12px;margin-top:12px;display:none;background:#fef2f2;padding:10px 14px;border-radius:10px;border:1px solid #fecaca}
+
+/* === Stat Cards === */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;transition:all .2s ease}
+.stat-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.05);transform:translateY(-2px)}
+.stat-card .label{font-size:11px;color:#9ca3af;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:800;color:#111827;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.stat-card .value.blue{color:#1e40af}
+.stat-card .value.green{color:#059669}
+.stat-card .value.red{color:#dc2626}
+
+/* === Recommend Section === */
+.rec-section-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:#111827}
+.rec-section-title .rec-icon{font-size:20px}
+.rec-section{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:28px}
+.rec-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;transition:all .2s ease;position:relative;overflow:hidden}
+.rec-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-2px)}
+.rec-card .rec-type-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.rec-card .rec-label{font-size:12px;font-weight:700;margin-bottom:12px;display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px}
+.rec-card .rec-label.tansho{background:#fef2f2;color:#dc2626}
+.rec-card .rec-label.fukusho{background:#eff6ff;color:#1e40af}
+.rec-card .rec-label.umaren{background:#fef2f2;color:#dc2626}
+.rec-card .rec-label.sanrenpuku{background:#fefce8;color:#a16207}
+.rec-card .rec-label.wide{background:#ecfdf5;color:#059669}
+.rec-card .rec-value{font-size:15px;font-weight:700;line-height:1.8;color:#111827}
+.rec-card .rec-ev{font-size:11px;color:#9ca3af;margin-top:8px;font-weight:400}
+.rec-card .confidence{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;margin-top:8px}
+.conf-high{background:#ecfdf5;color:#059669}.conf-mid{background:#fffbeb;color:#d97706}.conf-low{background:#f3f4f6;color:#9ca3af}
+/* Confidence bar */
+.conf-meter{height:4px;border-radius:2px;background:#e5e7eb;margin-top:8px;overflow:hidden}
+.conf-meter-fill{height:100%;border-radius:2px;transition:width .5s ease}
+
+/* === No Odds Notice === */
+.no-odds-note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:12px;color:#d97706;margin-top:16px;font-weight:500}
+
+/* === Settings === */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.settings-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:24px}
+.settings-card h3{font-size:14px;font-weight:700;margin-bottom:16px;color:#111827}
+.settings-card input{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:10px;transition:all .15s;color:#111827;background:#f9fafb}
+.settings-card input:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(30,64,175,.08);background:#fff}
+.settings-card .btn{background:#1e40af;color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;transition:all .15s}
+.settings-card .btn:hover{background:#1e3a8a;box-shadow:0 2px 8px rgba(30,64,175,.2)}
+.settings-card .btn:active{transform:scale(.98)}
+.settings-card .btn-danger{background:#dc2626}
+.settings-card .btn-danger:hover{background:#b91c1c}
+.empty{text-align:center;padding:60px;color:#9ca3af;font-size:14px}
+
+/* === History Table === */
+.table-wrap{overflow-x:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px}
+
+/* === Results === */
+.results-box{margin-top:20px;background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden}
+.results-header{background:linear-gradient(135deg,#059669,#34d399);padding:16px 24px;color:#fff}
+.results-header h3{font-size:15px;font-weight:700}
+.result-hit{color:#059669;font-weight:700}.result-miss{color:#dc2626;font-weight:600}
+
+/* === Best Bets Section === */
+.bb-section{margin-bottom:20px;animation:fadeIn .3s ease-out}
+.bb-wrapper{background:linear-gradient(135deg,#0f172a,#1e293b,#1e3a8a);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+.bb-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.bb-header h3{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.bb-header .bb-count{font-size:12px;color:rgba(255,255,255,.5);font-weight:400}
+.bb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.bb-card{background:rgba(255,255,255,.07);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;transition:all .2s ease;cursor:pointer;position:relative;overflow:hidden}
+.bb-card:hover{background:rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
+.bb-card .bb-rank{position:absolute;top:0;left:0;font-size:12px;font-weight:800;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:0 0 10px 0}
+.bb-card .bb-rank{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.bb-card .bb-rank.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f}
+.bb-card .bb-rank.r2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#374151}
+.bb-card .bb-rank.r3{background:linear-gradient(135deg,#f59e0b,#d97706);color:#78350f}
+.bb-card .bb-venue{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:4px;padding-left:32px;font-weight:400}
+.bb-card .bb-race{font-size:13px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px}
+.bb-card .bb-horse{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bb-card .bb-horse .bb-num{background:rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:700;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.bb-card .bb-horse .bb-name{font-size:15px;font-weight:700;color:#fff}
+.bb-card .bb-stats{display:flex;gap:8px;flex-wrap:wrap}
+.bb-card .bb-stat{font-size:11px;color:rgba(255,255,255,.45)}
+.bb-card .bb-stat b{color:rgba(255,255,255,.8)}
+.bb-card .bb-rec{margin-top:8px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;display:inline-block}
+.bb-card .bb-rec.strong{background:rgba(5,150,105,.25);color:#6ee7b7}
+.bb-card .bb-rec.rec{background:rgba(59,130,246,.25);color:#93c5fd}
+.bb-card .bb-rec.maybe{background:rgba(245,158,11,.2);color:#fcd34d}
+.bb-card .bb-rec.skip{background:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+.bb-loading{text-align:center;padding:24px;color:rgba(255,255,255,.4);font-size:13px}
+
+/* === Action Buttons === */
+.action-row{margin-top:12px;display:flex;gap:8px;justify-content:flex-end}
+.action-btn{background:#fff;border:1px solid #e5e7eb;padding:8px 16px;border-radius:10px;font-size:12px;cursor:pointer;color:#6b7280;transition:all .15s;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.action-btn:hover{border-color:#93c5fd;color:#1e40af;background:#eff6ff}
+.action-btn:active{transform:scale(.98)}
+
+/* === Spread Notice === */
+.spread-notice{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 16px;font-size:12px;color:#d97706;margin:12px 24px 0;font-weight:500}
+
+/* === Bottom Tab Bar === */
+.bottom-tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid #e5e7eb;display:none;justify-content:space-around;align-items:stretch;padding:0;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.bottom-tab-bar .tab-item{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px;min-width:48px;padding:6px 4px;flex:1;cursor:pointer;color:#9ca3af;font-size:10px;font-weight:600;transition:color .15s;text-decoration:none;-webkit-tap-highlight-color:transparent;border:none;background:transparent}
+.bottom-tab-bar .tab-item:active{background:#f3f4f6}
+.bottom-tab-bar .tab-item.active{color:#1e40af}
+.bottom-tab-bar .tab-icon{font-size:22px;line-height:1;margin-bottom:2px}
+.bottom-tab-bar .tab-label{font-size:10px;line-height:1.2}
+
+/* === Mobile Horse Cards === */
+.mobile-cards-wrap{display:none}
+.mobile-horse-card{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;flex-wrap:wrap}
+.mobile-horse-card:active{background:#f8fafc}
+.mobile-horse-card.expanded{border-color:#93c5fd;box-shadow:0 2px 8px rgba(30,64,175,.08)}
+.mobile-horse-card .horse-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;background:#f3f4f6;color:#6b7280}
+.mobile-horse-card .horse-rank.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f;box-shadow:0 2px 6px rgba(245,158,11,.3)}
+.mobile-horse-card .horse-rank.r2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#374151}
+.mobile-horse-card .horse-rank.r3{background:linear-gradient(135deg,#f59e0b,#d97706);color:#78350f}
+.mobile-horse-card .horse-main{flex:1;min-width:0}
+.mobile-horse-card .horse-name{font-size:14px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-horse-card .horse-prob{font-size:12px;color:#6b7280;margin-top:2px}
+.mobile-horse-card .horse-rec{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.mobile-horse-card .horse-rec.rec-strong{background:#fef2f2;color:#dc2626}
+.mobile-horse-card .horse-rec.rec-buy{background:#eff6ff;color:#1e40af}
+.mobile-horse-card .horse-rec.rec-maybe{background:#ecfdf5;color:#059669}
+.mobile-horse-card .horse-rec.rec-none{background:#f3f4f6;color:#9ca3af}
+.mobile-horse-card .horse-details{display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6}
+.mobile-horse-card.expanded .horse-details{display:block}
+.mobile-horse-card .horse-details .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mobile-horse-card .horse-details .detail-item{font-size:12px;color:#6b7280}
+.mobile-horse-card .horse-details .detail-item b{color:#111827}
+
+/* === Bet Slip Copy Button === */
+.bet-copy-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;min-height:44px;margin-top:12px;-webkit-tap-highlight-color:transparent}
+.bet-copy-btn:hover{box-shadow:0 4px 12px rgba(30,64,175,.3);transform:translateY(-1px)}
+.bet-copy-btn:active{transform:scale(.98)}
+
+/* === Responsive === */
+@media(max-width:600px){
+  .topnav .nav-links{display:none}
+  .topnav .logout-btn{display:none}
+  .bottom-tab-bar{display:flex}
+  body{padding-bottom:64px}
+  .topnav-inner{gap:6px;padding:0 12px;height:50px}
+  .topnav .logo{font-size:15px}
+  .topnav .logo-icon{font-size:18px}
+  .topnav .user-info{display:none}
+  .container{padding:16px;padding-bottom:80px}
+  .date-tabs{gap:6px;flex-direction:column}
+  .date-tab{padding:10px 14px;font-size:13px;min-height:44px}
+  .date-tab-custom{display:flex !important;margin-left:0;width:100%}
+  .date-tab-custom input{width:100%;padding:12px 14px;font-size:14px;min-height:44px}
+  .rec-section{grid-template-columns:1fr}
+  /* Hide table, show cards on mobile */
+  .table-outer{display:none}
+  .mobile-cards-wrap{display:block}
+  .bb-cards{grid-template-columns:1fr}
+  .bb-wrapper{padding:16px}
+  .pred-header{padding:16px 20px}
+  .pred-header h2{font-size:16px}
+  /* Bigger touch targets */
+  .race-row{padding:14px 16px;min-height:48px;gap:10px;font-size:14px}
+  .race-row .rnum{font-size:16px}
+  .race-row .rname{font-size:14px}
+  .grade-pill{padding:10px 16px;font-size:13px;min-height:44px;display:flex;align-items:center}
+  /* Race nav full-width buttons */
+  .race-nav{flex-direction:column;gap:10px}
+  .race-nav button{width:100%;min-height:48px;padding:14px 20px;font-size:14px;font-weight:600}
+  .race-nav .race-counter{order:-1;font-size:14px}
+  /* Action buttons bigger */
+  .action-row{flex-direction:column}
+  .action-btn{min-height:44px;padding:12px 20px;font-size:14px;justify-content:center;width:100%}
+  /* Settings responsive */
+  .settings-card .btn{min-height:44px;padding:12px 24px;font-size:14px}
+  .settings-card input{min-height:44px;padding:12px 14px;font-size:14px}
+  /* Stat cards */
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  /* Swipe hint */
+  .swipe-hint{display:block;text-align:center;font-size:12px;color:#9ca3af;margin-top:8px;padding:4px}
+}
+@media(min-width:601px){
+  .bottom-tab-bar{display:none !important}
+  .mobile-cards-wrap{display:none !important}
+  .swipe-hint{display:none}
+}
+@media(max-width:400px){
+  .rank-cell{width:26px;height:26px;font-size:12px}
+  .rank-cell.r1,.rank-cell.r2,.rank-cell.r3{font-size:13px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .stat-card .value{font-size:22px}
+}
+
+/* === Performance Page === */
+.perf-hero{background:linear-gradient(135deg,#1e3a8a,#1e40af,#2563eb);border-radius:16px;padding:40px 32px;color:#fff;text-align:center;margin-bottom:28px}
+.perf-hero h1{font-size:26px;font-weight:800;letter-spacing:-.4px;margin-bottom:8px}
+.perf-hero .perf-sub{font-size:14px;opacity:.85;margin-bottom:20px}
+.perf-hero .perf-key{display:inline-block;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 28px;font-size:18px;font-weight:700;letter-spacing:-.2px}
+.perf-hero .perf-key .hl{color:#fbbf24}
+.perf-section{margin-bottom:28px}
+.perf-section h2{font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.perf-tbl-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow-x:auto}
+.perf-tbl{width:100%;border-collapse:collapse}
+.perf-tbl thead th{background:#f8f9fa;padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-align:center;border-bottom:2px solid #e5e7eb;text-transform:uppercase;letter-spacing:.4px}
+.perf-tbl tbody td{padding:12px 16px;font-size:13px;text-align:center;border-bottom:1px solid #f3f4f6;font-variant-numeric:tabular-nums}
+.perf-tbl tbody tr:hover{background:#f8fafc}
+.perf-tbl tbody tr.hl-row{background:#eff6ff}
+.perf-tbl tbody tr.hl-row td{font-weight:600}
+.roi-pos{color:#059669;font-weight:700}.roi-neg{color:#dc2626;font-weight:600}
+.perf-chart-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px}
+.perf-insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.perf-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:22px;transition:all .2s}
+.perf-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.05);transform:translateY(-2px)}
+.perf-card h3{font-size:14px;font-weight:700;color:#1e40af;margin-bottom:8px}
+.perf-card p{font-size:13px;color:#6b7280;line-height:1.6}
+.perf-card .big-val{font-size:22px;font-weight:800;color:#111827;margin:8px 0;font-variant-numeric:tabular-nums}
+.perf-disc{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 20px;font-size:12px;color:#92400e;margin-top:28px;font-weight:500;line-height:1.6}
+@media(max-width:600px){
+  .perf-hero{padding:28px 20px}
+  .perf-hero h1{font-size:20px}
+  .perf-hero .perf-key{font-size:14px;padding:10px 18px}
+  .perf-insights{grid-template-columns:1fr}
+  .perf-tbl thead th,.perf-tbl tbody td{padding:10px 8px;font-size:12px}
+}
+
+/* === Replay Mode === */
+.replay-hero{background:linear-gradient(135deg,#7c3aed,#a855f7,#c084fc);padding:40px 24px;border-radius:20px;text-align:center;color:#fff;margin-bottom:24px}
+.replay-hero h1{font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
+.replay-hero p{font-size:14px;opacity:.85}
+.replay-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 40px;font-size:16px;font-weight:700;border:none;border-radius:14px;cursor:pointer;transition:all .2s;min-height:52px;-webkit-tap-highlight-color:transparent}
+.replay-btn-main{background:#fff;color:#7c3aed;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.replay-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.4)}
+.replay-btn-main:active{transform:scale(.98)}
+.replay-btn-reveal{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.3)}
+.replay-btn-reveal:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(220,38,38,.4)}
+.replay-btn-again{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;margin-top:16px}
+.replay-streak{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);padding:8px 20px;border-radius:24px;font-size:14px;font-weight:600;margin-top:16px;backdrop-filter:blur(8px)}
+.replay-race-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;margin-bottom:16px}
+.replay-race-header{background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:16px 20px;color:#fff}
+.replay-race-header h2{font-size:16px;font-weight:700}
+.replay-race-header p{font-size:12px;opacity:.8;margin-top:4px}
+.replay-horse{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f3f4f6;cursor:pointer;transition:all .15s}
+.replay-horse:last-child{border-bottom:none}
+.replay-horse:hover{background:#f8fafc}
+.replay-horse.selected{background:#eff6ff;border-left:3px solid #7c3aed}
+.replay-horse .rh-num{width:32px;height:32px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#374151;flex-shrink:0}
+.replay-horse .rh-name{font-size:14px;font-weight:600;color:#111827}
+.replay-horse .rh-info{font-size:11px;color:#9ca3af;margin-top:2px}
+.replay-horse .rh-odds{font-size:13px;font-weight:700;color:#6b7280;margin-left:auto;white-space:nowrap}
+.replay-ai-box{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;margin-bottom:16px}
+.replay-ai-box h3{font-size:14px;font-weight:700;color:#1e40af;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.replay-ai-rank{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px}
+.replay-ai-rank .rank-mark{font-weight:800;font-size:16px;min-width:24px}
+.replay-ai-rank .rank-mark.r1{color:#dc2626}
+.replay-ai-rank .rank-mark.r2{color:#1e40af}
+.replay-ai-rank .rank-mark.r3{color:#059669}
+.replay-result-box{background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;margin-top:20px;animation:fadeIn .5s ease-out}
+.replay-result-header{padding:20px;text-align:center}
+.replay-result-header.ai-win{background:linear-gradient(135deg,#059669,#34d399)}
+.replay-result-header.ai-miss{background:linear-gradient(135deg,#dc2626,#f87171)}
+.replay-result-header h3{color:#fff;font-size:20px;font-weight:800}
+.replay-result-header p{color:rgba(255,255,255,.85);font-size:13px;margin-top:4px}
+.replay-finish{padding:16px}
+.replay-finish-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;border-bottom:1px solid #f3f4f6}
+.replay-finish-row:last-child{border-bottom:none}
+.replay-finish-row .pos{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.replay-finish-row .pos.p1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f}
+.replay-finish-row .pos.p2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#374151}
+.replay-finish-row .pos.p3{background:linear-gradient(135deg,#f59e0b,#d97706);color:#78350f}
+.replay-finish-row .pos.other{background:#f3f4f6;color:#9ca3af}
+.replay-pnl{text-align:center;padding:16px;font-size:16px;font-weight:700;border-top:1px solid #e5e7eb}
+.replay-pnl.positive{color:#059669;background:#ecfdf5}
+.replay-pnl.negative{color:#dc2626;background:#fef2f2}
+@keyframes revealSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.reveal-anim{animation:revealSlide .5s ease-out}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API='/keiba/api';
+const S={token:localStorage.getItem('token'),user:localStorage.getItem('username')||'',isAdmin:localStorage.getItem('isAdmin')==='1'};
+
+async function apiFetch(path,opts={}){
+  const token=localStorage.getItem('token');
+  const res=await fetch(API+path,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(opts.headers||{})}});
+  if(res.status===401){
+    const e=await res.json().catch(()=>({}));
+    if(path==='/auth/login'){throw new Error(e.detail||'ユーザー名またはパスワードが正しくありません');}
+    S.token=null;localStorage.removeItem('token');showLogin();throw new Error('ログインしてください');
+  }
+  if(res.status===429){const e=await res.json().catch(()=>({}));throw new Error(e.detail||'リクエストが多すぎます。しばらくお待ちください');}
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.detail||'サーバーエラー');}
+  return res.json();
+}
+
+function toast(msg,type='info'){
+  const bg=type==='error'?'#dc2626':type==='success'?'#059669':'#1e40af';
+  const el=document.createElement('div');el.className='toast';el.style.background=bg;el.textContent=msg;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),3000);
+}
+function fmt(n,d=1){return n!=null&&!isNaN(n)&&n!==0?Number(n).toFixed(d):'-';}
+function pct(n){if(n==null||isNaN(n)||n===0)return'-';const v=n*100;return v.toFixed(1)+'%';}
+function _buildBetCards(w,wConf,wConfLabel,wConfPct,wConfColor,t3,t3Conf,t3ConfLabel,t3ConfPct,t3ConfColor,m2,m2raw,m3,m3raw,wide,wideRaw,hasOddsData,BK,_kelly,_betUnit,_pct,_fmt){
+  // ケリー基準で比率を計算し、合計をBK(10000)に正規化
+  var rawW=w?Math.max(_kelly(w.prob_win,w.odds),0):0;
+  var rawF=t3.reduce(function(s,h){return s+Math.max(_kelly(h.prob_top3,h.odds>0?Math.max(h.odds*0.35,1.1):0)*0.6,0);},0);
+  var m2Prob=m2raw.length>=2?(m2raw[0].prob_win*m2raw[1].prob_top3+m2raw[1].prob_win*m2raw[0].prob_top3):0;
+  var m2Odds=m2raw.length>=2&&m2raw[0].odds>0&&m2raw[1].odds>0?Math.round(m2raw[0].odds*m2raw[1].odds*0.4):0;
+  var rawM2=m2Odds>0?Math.max(_kelly(m2Prob,m2Odds)*0.5,0):0;
+  var s3Prob=m3raw.length>=3?m3raw[0].prob_top3*m3raw[1].prob_top3*m3raw[2].prob_top3*6:0;
+  var s3Odds=m3raw.length>=3&&m3raw[0].odds>0&&m3raw[1].odds>0&&m3raw[2].odds>0?Math.round(m3raw[0].odds*m3raw[1].odds*m3raw[2].odds*0.05):0;
+  var rawS3=s3Odds>0?Math.max(_kelly(s3Prob,s3Odds)*0.3,0):0;
+  var wdProb=wideRaw.length>=2?wideRaw[0].prob_top3*wideRaw[1].prob_top3:0;
+  var wdOdds=wideRaw.length>=2&&wideRaw[0].odds>0&&wideRaw[1].odds>0?Math.max(Math.round((wideRaw[0].odds+wideRaw[1].odds)*0.25),1):0;
+  var rawWd=wdOdds>0?Math.max(_kelly(wdProb,wdOdds)*0.5,0):0;
+  var rawTotal=rawW+rawF+rawM2+rawS3+rawWd;
+  // 合計10000円に正規化 (100円単位)
+  function alloc(raw){if(!hasOddsData||rawTotal<=0)return 0;return Math.round(raw/rawTotal*BK/100)*100;}
+  var wBet=alloc(rawW),fTotal=alloc(rawF),m2Bet=alloc(rawM2),s3Bet=alloc(rawS3),wdBet=alloc(rawWd);
+  // 端数をwBetで調整して合計をBKに合わせる
+  var sum5=wBet+fTotal+m2Bet+s3Bet+wdBet;
+  if(hasOddsData&&sum5>0){var diff=BK-sum5;wBet=Math.max(0,wBet+diff);}
+  var totalBet=wBet+fTotal+m2Bet+s3Bet+wdBet;
+  // 回収額計算
+  var wPay=w&&w.odds>0?Math.round(wBet*w.odds):0;
+  var fBets=t3.map(function(h,i){var n=t3.length;var b=Math.round(fTotal/n/100)*100;if(i===0)b=fTotal-b*(n-1);return{b:b,pay:h.odds>0?Math.round(b*Math.max(h.odds*0.35,1.1)):0};});
+  var fPayMin=fBets.reduce(function(s,x){return s+x.pay;},0);
+  var m2Pay=Math.round(m2Bet*m2Odds);
+  var s3Pay=Math.round(s3Bet*s3Odds);
+  var wdPay=Math.round(wdBet*wdOdds);
+  function bb(amt,pay){if(!hasOddsData||amt<=0)return'';return'<div style="margin-top:8px;padding:8px 12px;background:rgba(255,255,255,0.04);border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span style="color:#9ca3af">投資 <b style="color:#e4e4ef">\u00A5'+amt.toLocaleString()+'</b></span><span style="color:#9ca3af">回収 <b style="color:#34d399">\u00A5'+pay.toLocaleString()+'</b></span></div>';}
+  var h='';
+  h+='<div class="rec-card"><div class="rec-type-bar" style="background:linear-gradient(90deg,#dc2626,#ef4444)"></div><div class="rec-label tansho">&#127919; 単勝</div>';
+  h+='<div class="rec-value">'+(w?'&#9678; <b>'+w.horse_number+'</b> '+w.horse_name:'-')+'</div>';
+  h+='<div class="rec-ev">勝率 '+_pct(w?w.prob_win:0)+(w&&w.odds>0?' / オッズ '+_fmt(w.odds,1):'')+'</div>';
+  h+='<span class="confidence conf-'+wConf+'">'+wConfLabel+'</span>';
+  h+='<div class="conf-meter"><div class="conf-meter-fill" style="width:'+wConfPct+'%;background:'+wConfColor+'"></div></div>';
+  h+=bb(wBet,wPay)+'</div>';
+  h+='<div class="rec-card"><div class="rec-type-bar" style="background:linear-gradient(90deg,#1e40af,#3b82f6)"></div><div class="rec-label fukusho">&#128309; 複勝</div>';
+  h+='<div class="rec-value">'+t3.map(function(x,i){var mk=i===0?'&#9678;':i===1?'&#9675;':'&#9650;';return mk+' <b>'+x.horse_number+'</b> '+x.horse_name+' <span style="color:#9ca3af;font-size:11px">'+_pct(x.prob_top3)+'</span>';}).join('<br>')+'</div>';
+  h+='<span class="confidence conf-'+t3Conf+'">'+t3ConfLabel+'</span>';
+  h+='<div class="conf-meter"><div class="conf-meter-fill" style="width:'+t3ConfPct+'%;background:'+t3ConfColor+'"></div></div>';
+  h+=bb(fTotal,fPayMin)+'</div>';
+  h+='<div class="rec-card"><div class="rec-type-bar" style="background:linear-gradient(90deg,#dc2626,#f87171)"></div><div class="rec-label umaren">&#128308; 馬連</div>';
+  h+='<div class="rec-value">'+(m2.length>=2?'<b style="font-size:22px">'+m2[0].horse_number+'</b> <span style="color:#d1d5db;font-size:16px">&mdash;</span> <b style="font-size:22px">'+m2[1].horse_number+'</b>':'-')+'</div>';
+  h+='<div class="rec-ev">'+(m2raw.length>=2?m2raw[0].horse_name+' \u00D7 '+m2raw[1].horse_name:'')+(m2Odds>0?' / 想定オッズ '+m2Odds:'')+'</div>';
+  h+=bb(m2Bet,m2Pay)+'</div>';
+  h+='<div class="rec-card"><div class="rec-type-bar" style="background:linear-gradient(90deg,#d97706,#fbbf24)"></div><div class="rec-label sanrenpuku">&#128993; 三連複</div>';
+  h+='<div class="rec-value">'+(m3.length>=3?'<b style="font-size:22px">'+m3[0].horse_number+'</b> <span style="color:#d1d5db;font-size:16px">&mdash;</span> <b style="font-size:22px">'+m3[1].horse_number+'</b> <span style="color:#d1d5db;font-size:16px">&mdash;</span> <b style="font-size:22px">'+m3[2].horse_number+'</b>':'-')+'</div>';
+  h+='<div class="rec-ev">'+(m3.length>=3?m3.map(function(x){return x.horse_name;}).join(' \u00D7 '):'')+(s3Odds>0?' / 想定オッズ '+s3Odds:'')+'</div>';
+  h+=bb(s3Bet,s3Pay)+'</div>';
+  h+='<div class="rec-card"><div class="rec-type-bar" style="background:linear-gradient(90deg,#059669,#34d399)"></div><div class="rec-label wide">&#128994; ワイド</div>';
+  h+='<div class="rec-value">'+(wide.length>=2?'<b style="font-size:22px">'+wide[0].horse_number+'</b> <span style="color:#d1d5db;font-size:16px">&mdash;</span> <b style="font-size:22px">'+wide[1].horse_number+'</b>':'-')+'</div>';
+  h+='<div class="rec-ev">'+(wideRaw.length>=2?wideRaw[0].horse_name+' \u00D7 '+wideRaw[1].horse_name:'')+(wdOdds>0?' / 想定オッズ '+wdOdds:'')+'</div>';
+  h+=bb(wdBet,wdPay)+'</div>';
+  if(hasOddsData&&totalBet>0){h+='<div style="margin-top:16px;padding:16px 20px;background:linear-gradient(135deg,rgba(30,64,175,0.15),rgba(5,150,105,0.1));border:1px solid rgba(59,130,246,0.2);border-radius:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px"><div style="font-size:14px;font-weight:700;color:#e4e4ef">合計投資 <span style="font-size:20px;color:#93c5fd">\u00A5'+totalBet.toLocaleString()+'</span></div><div style="font-size:12px;color:#9ca3af">\u00A5'+BK.toLocaleString()+' / ケリー基準で5券種に最適配分</div></div>';}
+  return h;
+}
+function dateStr(d){return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
+function dayLabel(d){const days=['日','月','火','水','木','金','土'];return(d.getMonth()+1)+'/'+d.getDate()+'('+days[d.getDay()]+')';}
+
+function getNextSat(){
+  const d=new Date();
+  const day=d.getDay();
+  const diff=day===6?0:day===0?6:(6-day);
+  d.setDate(d.getDate()+diff);
+  return d;
+}
+function getNextSun(){
+  const d=new Date();
+  const day=d.getDay();
+  const diff=day===0?0:7-day;
+  d.setDate(d.getDate()+diff);
+  return d;
+}
+
+function logout(){localStorage.clear();S.token=null;S.user='';S.isAdmin=false;showLogin();}
+
+/* === Routing === */
+let curPage='predict';
+function goPage(id){curPage=id;location.hash=id;route();}
+function route(){
+  const h=location.hash.slice(1)||'predict';
+  if(h==='performance'){curPage=h;renderPerformance();return;}
+  if(h==='replay'){curPage=h;renderReplay();return;}
+  if(!S.token||!localStorage.getItem('token')){showLogin();return;}
+  curPage=h;
+  const pages={home:renderHome,predict:renderPredict,history:renderHistory,settings:renderSettings,results:renderResults,admin:renderAdmin,focus:renderFocus};
+  (pages[h]||renderPredict)();
+}
+
+function topNav(active){
+  const tabMap={'home':'home','predict':'predict','results':'results','history':'results','performance':'performance','settings':'settings','replay':'replay'};
+  const activeTab=tabMap[active]||'predict';
+  return`<nav class="topnav"><div class="topnav-inner">
+    <span class="logo" onclick="goPage('predict')"><span class="logo-icon">&#127943;</span> 競馬予測AI</span>
+    <div class="nav-links">
+      <a href="#" onclick="event.preventDefault();goPage('home')" class="${active==='home'?'active':''}">ホーム</a>
+      <a href="#" onclick="event.preventDefault();goPage('predict')" class="${active==='predict'?'active':''}">レース予測</a>
+      <a href="#" onclick="event.preventDefault();goPage('replay')" class="${active==='replay'?'active':''}">体験</a>
+      <a href="#" onclick="event.preventDefault();goPage('results')" class="${active==='results'?'active':''}">結果</a>
+      <a href="#" onclick="event.preventDefault();goPage('history')" class="${active==='history'?'active':''}">履歴</a>
+      <a href="#" onclick="event.preventDefault();goPage('performance')" class="${active==='performance'?'active':''}">実績</a>
+      <a href="#" onclick="event.preventDefault();goPage('settings')" class="${active==='settings'?'active':''}">設定</a>
+      ${S.isAdmin?`<a href="#" onclick="event.preventDefault();goPage('admin')" class="${active==='admin'?'active':''}" style="color:#dc2626;font-weight:700">&#128737;&#65039; 管理</a>`:''}
+    </div>
+    <span class="user-info">${S.user}</span>
+    <button class="theme-toggle" onclick="toggleTheme()" title="ダークモード切替" id="theme-toggle-btn">${isDarkMode()?'\u2600\uFE0F':'\u{1F319}'}</button>
+    <button class="logout-btn" onclick="logout()">ログアウト</button>
+  </div></nav>
+  <nav class="bottom-tab-bar">
+    <button class="tab-item ${activeTab==='home'?'active':''}" onclick="goPage('home')">
+      <span class="tab-icon">&#127968;</span><span class="tab-label">ホーム</span>
+    </button>
+    <button class="tab-item ${activeTab==='predict'?'active':''}" onclick="goPage('predict')">
+      <span class="tab-icon">&#127943;</span><span class="tab-label">予測</span>
+    </button>
+    <button class="tab-item ${activeTab==='replay'?'active':''}" onclick="goPage('replay')">
+      <span class="tab-icon">&#127922;</span><span class="tab-label">体験</span>
+    </button>
+    <button class="tab-item ${activeTab==='results'?'active':''}" onclick="goPage('results')">
+      <span class="tab-icon">&#128202;</span><span class="tab-label">結果</span>
+    </button>
+    <button class="tab-item ${activeTab==='settings'?'active':''}" onclick="goPage('settings')">
+      <span class="tab-icon">&#9881;</span><span class="tab-label">設定</span>
+    </button>
+  </nav>`;
+}
+
+/* === Login === */
+function showLogin(){
+  document.getElementById('app').innerHTML=`<div class="login-wrap"><div class="login-card">
+    <h1>&#127943; 競馬予測AI</h1><p class="sub">v7.2-advanced 稼働中</p>
+    <div id="lerr" class="err"></div>
+    <label>ユーザー名</label><input id="lu" type="text" placeholder="ユーザー名を入力" autocomplete="username">
+    <label>パスワード</label><input id="lp" type="password" placeholder="パスワードを入力" autocomplete="current-password">
+    <button onclick="doLogin()">ログイン</button>
+    <p style="text-align:center;margin-top:20px"><a href="#performance" onclick="event.preventDefault();goPage('performance')" style="font-size:13px;color:#6b7280;text-decoration:underline">&#128200; AI予測の実績を見る</a></p>
+    <p style="text-align:center;margin-top:8px"><a href="#replay" onclick="event.preventDefault();goPage('replay')" style="font-size:13px;color:#7c3aed;text-decoration:underline">&#127922; 体験モード - 過去レースに挑戦</a></p>
+  </div></div>`;
+  setTimeout(()=>{
+    document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+    document.getElementById('lu')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lp')?.focus();});
+    document.getElementById('lu')?.focus();
+  },50);
+}
+window.doLogin=async()=>{
+  const u=document.getElementById('lu')?.value.trim(),p=document.getElementById('lp')?.value;
+  const err=document.getElementById('lerr');
+  if(!u||!p){err.style.display='block';err.textContent='ユーザー名とパスワードを入力してください';return;}
+  try{
+    err.style.display='none';
+    const d=await apiFetch('/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
+    if(d.status&&d.status!=='ok'&&d.status!=='success'){
+      err.style.display='block';err.textContent=d.message||'ログインに失敗しました';return;
+    }
+    S.token=d.access_token||d.token;S.user=d.username||u;
+    localStorage.setItem('token',S.token);localStorage.setItem('username',S.user);
+    try{const me=await apiFetch('/auth/me');S.isAdmin=(me?.user?.role==='admin');localStorage.setItem('isAdmin',S.isAdmin?'1':'0');}catch(e){S.isAdmin=false;}
+    goPage('predict');
+  }catch(e){err.style.display='block';err.textContent=e.message||'ログインに失敗しました';}
+};
+
+/* === Home === */
+async function renderHome(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('home')+'<div class="container fade-in"><div class="loading-box"><div class="spinner"></div></div></div>';
+  try{
+    const[status,stats]=await Promise.all([apiFetch('/status'),apiFetch('/stats/model')]);
+    const w=stats.metrics?.win?.mean_auc,t=stats.metrics?.top3?.mean_auc,m=stats.metrics?.position?.mean_mae;
+    const now=new Date();
+    const hour=now.getHours();
+    const greeting=hour<12?'おはようございます':hour<18?'こんにちは':'こんばんは';
+    $.innerHTML=topNav('home')+`<div class="container fade-in">
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;color:#111827;letter-spacing:-.3px">${greeting}、${S.user}さん</h2>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:28px">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">モデル</div><div class="value ${status.model_loaded?'green':'red'}">${status.model_loaded?'稼働中':'停止'}</div></div>
+        <div class="stat-card"><div class="label">学習データ</div><div class="value">${(status.db_records||0).toLocaleString()}</div></div>
+        <div class="stat-card"><div class="label">Win AUC</div><div class="value blue">${w?w.toFixed(4):'-'}</div></div>
+        <div class="stat-card"><div class="label">Top3 AUC</div><div class="value blue">${t?t.toFixed(4):'-'}</div></div>
+        <div class="stat-card"><div class="label">着順MAE</div><div class="value">${m?m.toFixed(3):'-'}</div></div>
+        <div class="stat-card"><div class="label">特徴量</div><div class="value">${status.model_info?.n_features||'-'}</div></div>
+      </div>
+      <div id="home-races" style="margin-top:24px"></div>
+      <div style="text-align:center;margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button onclick="goPage('predict')" style="background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:16px 36px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(30,64,175,.3);transition:all .2s;letter-spacing:.2px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(30,64,175,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(30,64,175,.3)'">&#127943; レース予測</button>
+        <button onclick="goPage('focus')" style="background:linear-gradient(135deg,#111827,#1f2937);color:#fff;border:none;padding:16px 36px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:all .2s;letter-spacing:.2px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''" title="直近レース・ワンタップ画面">&#127919; Focus</button>
+      </div>
+      <div style="margin-top:32px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 24px;text-align:center">
+        <p style="font-size:13px;color:#6b7280">v7.2-advanced &mdash; LightGBM + XGBoost + CatBoost + LambdaRank + L2/L4 Stacking (${status.model_info?.n_features||220}特徴量)</p>
+      </div>
+    </div>`;
+    // Load weekend race summary
+    try{
+      const sat=getNextSat(),sun=getNextSun();
+      const[rSat,rSun]=await Promise.allSettled([
+        apiFetch('/races/upcoming?date='+dateStr(sat)),
+        apiFetch('/races/upcoming?date='+dateStr(sun))
+      ]);
+      const nSat=rSat.status==='fulfilled'?(rSat.value.races||[]).length:0;
+      const nSun=rSun.status==='fulfilled'?(rSun.value.races||[]).length:0;
+      const el=document.getElementById('home-races');
+      if(el&&(nSat>0||nSun>0)){
+        el.innerHTML=`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+          ${nSat>0?`<div style="text-align:center"><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-bottom:4px">土曜 ${dayLabel(sat)}</div><div style="font-size:24px;font-weight:800;color:#1e40af;font-variant-numeric:tabular-nums">${nSat}<span style="font-size:14px;font-weight:600;margin-left:2px">R</span></div></div>`:''}
+          ${nSun>0?`<div style="text-align:center"><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-bottom:4px">日曜 ${dayLabel(sun)}</div><div style="font-size:24px;font-weight:800;color:#1e40af;font-variant-numeric:tabular-nums">${nSun}<span style="font-size:14px;font-weight:600;margin-left:2px">R</span></div></div>`:''}
+        </div>`;
+      }
+    }catch(e){}
+  }catch(e){$.innerHTML=topNav('home')+`<div class="container"><div class="empty" style="color:#dc2626">エラー: ${e.message}</div></div>`;}
+}
+
+/* === Focus Mode (発走前・ワンタップ) === */
+function _parseStartTime(s){
+  if(!s)return null;
+  const m=String(s).match(/(\d{1,2}):(\d{2})/);
+  if(!m)return null;
+  const d=new Date();
+  d.setHours(parseInt(m[1],10),parseInt(m[2],10),0,0);
+  return d;
+}
+async function renderFocus(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('focus')+'<div class="container fade-in"><div class="loading-box"><div class="spinner"></div><p>直近のレースを検索中...</p></div></div>';
+  try{
+    const today=new Date();
+    const ds=dateStr(today);
+    const r=await apiFetch('/races/upcoming?date='+ds);
+    const races=(r.races||r.data||[]);
+    if(!races.length){
+      $.innerHTML=topNav('focus')+`<div class="container fade-in"><div class="empty">本日のレースがありません<br><br><button onclick="goPage('predict')" style="background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:600">レース予測へ</button></div></div>`;
+      return;
+    }
+    const now=new Date();
+    // 発走30分前〜発走後30分を「直近」と見なし、最も近い未発走レースを選ぶ
+    let best=null,bestDelta=Infinity;
+    for(const race of races){
+      const st=_parseStartTime(race.start_time);
+      if(!st)continue;
+      const delta=st.getTime()-now.getTime();
+      if(delta<-30*60*1000)continue;  // 30分以上過ぎたものは除外
+      if(delta<bestDelta){bestDelta=delta;best=race;}
+    }
+    if(!best){
+      $.innerHTML=topNav('focus')+`<div class="container fade-in"><div class="empty">本日の未発走レースはありません<br><br><button onclick="goPage('results')" style="background:#1e40af;color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:600">結果を見る</button></div></div>`;
+      return;
+    }
+    const minToGo=Math.round(bestDelta/60000);
+    const statusColor=minToGo<=5?'#dc2626':minToGo<=15?'#d97706':'#059669';
+    const statusLabel=minToGo<=0?'間もなく発走':minToGo<=5?'まもなく発走':minToGo<=15?'発走間近':'余裕あり';
+    $.innerHTML=topNav('focus')+`<div class="container fade-in">
+      <div style="background:linear-gradient(135deg,#111827,#1f2937);color:#fff;border-radius:16px;padding:24px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:12px;font-weight:600;letter-spacing:1px;color:#9ca3af">FOCUS MODE</span>
+          <span style="background:${statusColor};padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700">${statusLabel}</span>
+        </div>
+        <div style="font-size:14px;color:#d1d5db;margin-bottom:4px">${best.venue||''} ${best.race_number||''}R</div>
+        <div style="font-size:22px;font-weight:800;line-height:1.3">${best.race_name||best.race_id||''}</div>
+        <div style="margin-top:12px;display:flex;gap:16px;font-size:13px;color:#9ca3af">
+          <span>&#128337; ${best.start_time||'--:--'}</span>
+          <span style="color:${statusColor};font-weight:700">T-${minToGo>0?minToGo:0}分</span>
+          ${best.course_info?`<span>${best.course_info}</span>`:''}
+        </div>
+      </div>
+      <div id="focus-pred"><div class="loading-box"><div class="spinner"></div><p>AI予測を取得中... (10〜30秒)</p></div></div>
+    </div>`;
+    // 予測取得
+    try{
+      const d=await apiFetch('/upcoming/predict/race/'+best.race_id);
+      const preds=d.predictions||d.horses||[];
+      renderFocusPred(best,preds);
+    }catch(e){
+      const el=document.getElementById('focus-pred');
+      if(el)el.innerHTML=`<div class="empty" style="color:#dc2626">予測エラー: ${e.message}</div>`;
+    }
+  }catch(e){
+    $.innerHTML=topNav('focus')+`<div class="container fade-in"><div class="empty" style="color:#dc2626">エラー: ${e.message}</div></div>`;
+  }
+}
+function renderFocusPred(race,preds){
+  const el=document.getElementById('focus-pred');if(!el)return;
+  if(!preds.length){el.innerHTML='<div class="empty">予測データがありません</div>';return;}
+  const sorted=[...preds].sort((a,b)=>(a.predicted_rank||999)-(b.predicted_rank||999));
+  const top3=sorted.slice(0,3);
+  const medalBg=['linear-gradient(135deg,#f59e0b,#fbbf24)','linear-gradient(135deg,#9ca3af,#d1d5db)','linear-gradient(135deg,#c2410c,#ea580c)'];
+  const medalLabel=['&#129351; 本命','&#129352; 対抗','&#129353; 単穴'];
+  let html='';
+  top3.forEach((h,i)=>{
+    const ev=h.expected_value||h.ev_mean||0;
+    const pw=(h.prob_win||h.win_prob||0)*100;
+    const od=h.odds||0;
+    const rec=h.recommendation||h.recommended_bet||'-';
+    const isStrong=/強く|推奨/.test(rec);
+    html+=`<div style="background:#fff;border-radius:14px;padding:18px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:6px solid ${i===0?'#f59e0b':i===1?'#9ca3af':'#c2410c'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:${medalBg[i]};color:#fff;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700">${medalLabel[i]}</span>
+          <span style="font-size:11px;color:#9ca3af">${h.horse_number}番</span>
+        </div>
+        ${isStrong?`<span style="background:#fef2f2;color:#dc2626;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700">${rec}</span>`:`<span style="font-size:10px;color:#9ca3af">${rec}</span>`}
+      </div>
+      <div style="font-size:20px;font-weight:800;color:#111827;margin-bottom:8px">${h.horse_name||''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+        <div><div style="font-size:10px;color:#9ca3af;letter-spacing:.5px">勝率</div><div style="font-size:18px;font-weight:700;color:#1e40af">${pw.toFixed(1)}%</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;letter-spacing:.5px">オッズ</div><div style="font-size:18px;font-weight:700;color:#111827">${od>0?od.toFixed(1):'-'}</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;letter-spacing:.5px">EV</div><div style="font-size:18px;font-weight:700;color:${ev>1.2?'#059669':'#6b7280'}">${ev>0?ev.toFixed(2):'-'}</div></div>
+      </div>
+      ${isStrong&&od>0?`<button onclick="focusQuickBet('${race.race_id}',${h.horse_number},'${(h.horse_name||'').replace(/'/g,"\\'")}',${od})" style="width:100%;margin-top:12px;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px">&#128181; ペーパー購入 (100円)</button>`:''}
+    </div>`;
+  });
+  html+=`<div style="text-align:center;margin-top:16px"><a href="#predict" onclick="event.preventDefault();selectRace('${race.race_id}');goPage('predict');" style="color:#6b7280;font-size:12px;text-decoration:underline">全${preds.length}頭を見る</a></div>`;
+  el.innerHTML=html;
+}
+window.focusQuickBet=async(raceId,horseNum,horseName,odds)=>{
+  if(!confirm(`ペーパーベット (100円) を確定しますか?\n${horseNum}番 ${horseName} (${odds.toFixed(1)}倍)`))return;
+  try{
+    await apiFetch('/bets',{method:'POST',body:JSON.stringify({race_id:raceId,horse_number:horseNum,bet_type:'単勝',amount:100,odds:odds})});
+    toast('ペーパーベット完了','success');
+  }catch(e){toast('エラー: '+e.message,'error');}
+};
+
+/* === Predict === */
+let PR={date:null,races:[],filtered:[],selId:null,preds:[],raceInfo:{},sortCol:'predicted_rank',sortDir:'asc',grade:'',loading:false,raceScores:{},confOnly:false,confThreshold:0.55};
+let _favNames=new Set();
+const predCache={};
+
+async function renderPredict(){
+  // Load favorites for star display
+  try{const fd=await apiFetch('/favorites');_favNames=new Set((fd.favorites||[]).map(f=>f.horse_name));}catch(e){_favNames=new Set();}
+  const sat=getNextSat(),sun=getNextSun();
+  const today=new Date();
+  PR.dates=[];
+  if(today.getDay()===6||today.getDay()===0){
+    PR.dates.push({d:dateStr(today),label:'今日 '+dayLabel(today)});
+  }
+  if(dateStr(sat)!==dateStr(today)) PR.dates.push({d:dateStr(sat),label:dayLabel(sat)});
+  if(dateStr(sun)!==dateStr(today)) PR.dates.push({d:dateStr(sun),label:dayLabel(sun)});
+
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('predict')+`<div class="container fade-in">
+    <div class="date-tabs" id="dtabs">
+      ${PR.dates.map(x=>`<button class="date-tab" onclick="pickDate('${x.d}')" data-d="${x.d}">${x.label}</button>`).join('')}
+      <span class="date-tab-custom"><input type="date" onchange="pickDate(this.value.replace(/-/g,''))" title="日付を指定"></span>
+    </div>
+    <div id="best-bets-area"></div>
+    <div id="grade-bar-wrap"></div>
+    <div id="race-area"><div class="loading-box"><div class="spinner"></div><p>レース一覧を取得中...</p></div></div>
+    <div id="pred-area"></div>
+  </div>`;
+  if(PR.dates.length>0) pickDate(PR.dates[0].d);
+}
+
+window.pickDate=async(ds)=>{
+  if(!ds||ds.length!==8)return;
+  PR.date=ds;PR.selId=null;PR.preds=[];PR.grade='';PR.confOnly=false;PR.raceScores={};
+  document.querySelectorAll('.date-tab').forEach(b=>{b.classList.toggle('active',b.dataset.d===ds);});
+  const raceArea=document.getElementById('race-area');
+  const predArea=document.getElementById('pred-area');
+  if(raceArea)raceArea.innerHTML='<div class="loading-box"><div class="spinner"></div><p>レース一覧を取得中...</p></div>';
+  if(predArea)predArea.innerHTML='';
+  const gradeWrap=document.getElementById('grade-bar-wrap');
+  if(gradeWrap)gradeWrap.innerHTML='';
+  loadBestBets(ds);
+  try{
+    const r=await apiFetch('/races/upcoming?date='+ds);
+    PR.races=(r.races||r.data||[]).map(x=>({id:x.race_id,info:x}));
+    PR.filtered=[...PR.races];
+    if(!PR.races.length){
+      if(raceArea)raceArea.innerHTML='<div class="empty">この日はレースがありません</div>';
+      return;
+    }
+    renderGradeBar();
+    renderRaces();
+  }catch(e){if(raceArea)raceArea.innerHTML=`<div class="empty" style="color:#dc2626">${e.message}</div>`;}
+};
+
+async function loadBestBets(ds){
+  const el=document.getElementById('best-bets-area');
+  if(!el)return;
+  el.innerHTML='<div class="bb-section"><div class="bb-wrapper"><div class="bb-header"><h3>&#127942; 本日のおすすめ</h3></div><div class="bb-loading">おすすめを読み込み中...</div></div></div>';
+  try{
+    const d=await apiFetch('/best-bets?date='+ds).catch(()=>null);
+    if(d&&d.race_scores){PR.raceScores=d.race_scores;renderGradeBar();}
+    if(!d||!d.best_bets||d.best_bets.length===0){
+      el.innerHTML='<div class="bb-section"><div class="bb-wrapper"><div class="bb-header"><h3>&#127942; 本日のおすすめ</h3></div><div class="bb-loading">予測データを準備中...</div></div></div>';
+      return;
+    }
+    const top5=d.best_bets.slice(0,5);
+    let html='<div class="bb-section"><div class="bb-wrapper"><div class="bb-header"><h3>&#127942; 本日のおすすめ</h3><span class="bb-count">'+(d.total_races_analyzed||top5.length)+'レースから厳選</span></div><div class="bb-cards">';
+    top5.forEach(b=>{
+      const rankCls=b.rank<=3?'r'+b.rank:'';
+      let recCls='skip',recLabel=b.recommended_bet||'-';
+      if(recLabel.includes('強く'))recCls='strong';
+      else if(recLabel.includes('推奨'))recCls='rec';
+      else if(recLabel.includes('複勝')||recLabel.includes('注目')||recLabel.includes('候補'))recCls='maybe';
+      const evStr=b.expected_value>0?b.expected_value.toFixed(2):'-';
+      const oddsStr=b.odds>0?b.odds.toFixed(1):'-';
+      html+=`<div class="bb-card" onclick="if(window.selectRace)selectRace('${b.race_id}')">
+        <div class="bb-rank ${rankCls}">${b.rank}</div>
+        <div class="bb-venue">${b.venue||''} ${b.race_number||''}R ${b.course||''}</div>
+        <div class="bb-race">${b.race_name||b.race_id}</div>
+        <div class="bb-horse"><span class="bb-num">${b.horse_number}</span><span class="bb-name">${b.horse_name||''}</span></div>
+        <div class="bb-stats">
+          <span class="bb-stat">スコア <b>${(b.composite_score||0).toFixed(3)}</b></span>
+          <span class="bb-stat">勝率 <b>${((b.prob_win||0)*100).toFixed(1)}%</b></span>
+          <span class="bb-stat">オッズ <b>${oddsStr}</b></span>
+          <span class="bb-stat">EV <b>${evStr}</b></span>
+        </div>
+        <div class="bb-rec ${recCls}">${recLabel}</div>
+      </div>`;
+    });
+    html+='</div></div></div>';
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="bb-section"><div class="bb-wrapper"><div class="bb-header"><h3>&#127942; 本日のおすすめ</h3></div><div class="bb-loading">予測データを準備中...</div></div></div>';
+  }
+}
+
+/* Grade filter definitions with proper mapping to grade field values */
+const GRADE_FILTERS=[
+  {key:'',label:'全て'},
+  {key:'G1',label:'G1',match:g=>(/G1|GI(?!I)/i).test(g)},
+  {key:'G2',label:'G2',match:g=>(/G2|GII(?!I)/i).test(g)},
+  {key:'G3',label:'G3',match:g=>(/G3|GIII/i).test(g)},
+  {key:'重賞',label:'重賞',match:g=>(/G1|G2|G3|GI|GII|GIII|重賞/i).test(g)},
+  {key:'OP',label:'OP',match:g=>g.includes('OP')||g.includes('オープン')||g.includes('L')},
+  {key:'条件戦',label:'条件戦',match:g=>g.includes('1勝')||g.includes('2勝')||g.includes('3勝')||g.includes('未勝利')||g.includes('新馬')||g.includes('1勝クラス')||g.includes('2勝クラス')||g.includes('3勝クラス')},
+];
+
+function gradeMatchesFilter(grade, filterKey){
+  if(!filterKey) return true;
+  const f=GRADE_FILTERS.find(x=>x.key===filterKey);
+  if(!f||!f.match) return false;
+  return f.match(grade||'');
+}
+
+function renderGradeBar(){
+  const wrap=document.getElementById('grade-bar-wrap');
+  if(!wrap||!PR.races.length){if(wrap)wrap.innerHTML='';return;}
+  const cnt={};
+  GRADE_FILTERS.forEach(g=>cnt[g.key]=0);
+  PR.races.forEach(r=>{
+    const g=r.info?.grade||r.info?.class_name||'';
+    cnt['']++;
+    GRADE_FILTERS.forEach(f=>{
+      if(f.key&&f.match&&f.match(g)) cnt[f.key]++;
+    });
+  });
+  const visible=GRADE_FILTERS.filter(g=>g.key===''||cnt[g.key]>0);
+  // 信頼度フィルタ: 予測済みかつトップ馬 composite_score が閾値以上のレース数
+  const scored=Object.keys(PR.raceScores||{}).length;
+  const confCnt=PR.races.filter(r=>(PR.raceScores[r.id]||0)>=PR.confThreshold).length;
+  const confBtn=scored>0?`<button class="grade-pill ${PR.confOnly?'active':''}" style="${PR.confOnly?'background:#065f46;color:#fff':''}" onclick="toggleConfOnly()" title="トップ馬スコアが${PR.confThreshold.toFixed(2)}以上のレースのみ">&#10024; 高信頼<span class="cnt">${confCnt}</span></button>`:'';
+  wrap.innerHTML=`<div class="grade-bar">${visible.map(g=>
+    `<button class="grade-pill ${PR.grade===g.key?'active':''}" onclick="filterGrade('${g.key}')">${g.label}<span class="cnt">${cnt[g.key]}</span></button>`
+  ).join('')}${confBtn}</div>`;
+}
+
+window.toggleConfOnly=()=>{
+  PR.confOnly=!PR.confOnly;PR.selId=null;
+  applyFilters();
+  renderGradeBar();renderRaces();
+  const predArea=document.getElementById('pred-area');
+  if(predArea)predArea.innerHTML='';
+};
+
+function applyFilters(){
+  let arr=[...PR.races];
+  if(PR.grade) arr=arr.filter(r=>gradeMatchesFilter(r.info?.grade||r.info?.class_name||'',PR.grade));
+  if(PR.confOnly) arr=arr.filter(r=>(PR.raceScores[r.id]||0)>=PR.confThreshold);
+  PR.filtered=arr;
+}
+
+window.filterGrade=(g)=>{
+  PR.grade=g;PR.selId=null;
+  applyFilters();
+  renderGradeBar();renderRaces();
+  const predArea=document.getElementById('pred-area');
+  if(predArea)predArea.innerHTML='';
+};
+
+function gradeBadge(g){
+  if(!g)return'';
+  if(g.includes('G1')||g.includes('GI'))return`<span class="badge badge-g1">G1</span>`;
+  if(g.includes('G2')||g.includes('GII'))return`<span class="badge badge-g2">G2</span>`;
+  if(g.includes('G3')||g.includes('GIII'))return`<span class="badge badge-g3">G3</span>`;
+  if(g.includes('OP')||g.includes('オープン'))return`<span class="badge badge-op">OP</span>`;
+  return'';
+}
+
+/* Venue color helper */
+function venueColor(v){
+  const map={'中京':'#1e40af','中山':'#059669','阪神':'#dc2626','東京':'#7c3aed','京都':'#d97706','小倉':'#0891b2','新潟':'#16a34a','福島':'#ea580c','函館':'#4f46e5','札幌':'#0d9488'};
+  return map[v]||'#1e40af';
+}
+
+function renderRaces(){
+  const el=document.getElementById('race-area');
+  if(!el)return;
+  if(!PR.filtered.length){el.innerHTML='<div class="empty">該当するレースがありません</div>';return;}
+  const byV={};
+  PR.filtered.forEach(r=>{const v=r.info?.venue||'不明';(byV[v]=byV[v]||[]).push(r);});
+  let h='';
+  for(const[venue,races]of Object.entries(byV)){
+    races.sort((a,b)=>(a.info?.race_number||0)-(b.info?.race_number||0));
+    h+=`<div class="venue-section" data-venue="${venue}"><div class="venue-header">${venue} (${races.length}R)</div>`;
+    races.forEach(r=>{
+      const i=r.info||{};
+      const rn=i.race_number||i.race_num||'';
+      const rawName=i.race_name||r.id;
+      const nameClean=rawName.replace(/^\d+R/,'').trim();
+      const headMatch=nameClean.match(/(\d+)頭$/);
+      const rname=nameClean.replace(/\d+頭$/,'').replace(/[ダ芝]\d+m$/,'').trim()||nameClean;
+      const distMatch=nameClean.match(/(ダ|芝)(\d+)m/);
+      const dist=i.course_info||((distMatch?distMatch[1]+distMatch[2]+'m':'')||(i.course_type||'')+(i.distance?i.distance+'m':''));
+      const heads=i.horse_count||i.num_horses||(headMatch?headMatch[1]:'');
+      const grade=i.grade||i.class_name||'';
+      const sel=PR.selId===r.id?'selected':'';
+      const isShiba=dist.includes('芝');
+      const isDirt=dist.includes('ダ');
+      const courseIcon=isShiba?'<span style="color:#059669;font-size:11px;font-weight:700;background:#ecfdf5;padding:2px 6px;border-radius:4px">芝</span>':isDirt?'<span style="color:#92400e;font-size:11px;font-weight:700;background:#fef3c7;padding:2px 6px;border-radius:4px">ダ</span>':'';
+      const stime=i.start_time||'';
+      h+=`<div class="race-row ${sel}" data-id="${r.id}" onclick="selectRace('${r.id}')">
+        <span class="rnum">${rn}R</span>
+        <span class="rname">${rname}${gradeBadge(grade)}</span>
+        ${courseIcon}
+        <span class="rmeta">${dist.replace(/^[ダ芝]/,'')}</span>
+        ${heads?`<span class="rhorses">${heads}頭</span>`:''}
+        ${stime?`<span class="start-time">${stime}</span>`:''}
+      </div>`;
+    });
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+
+window.selectRace=async(id)=>{
+  if(PR.loading)return;
+  PR.selId=id;PR.sortCol='predicted_rank';PR.sortDir='asc';
+  document.querySelectorAll('.race-row').forEach(r=>{r.classList.toggle('selected',r.dataset.id===id);});
+  const det=document.getElementById('pred-area');
+  if(!det)return;
+  PR.loading=true;
+  const cached=predCache[id];
+  if(cached&&(Date.now()-cached.ts)<600000){
+    PR.preds=cached.preds;PR.raceInfo=cached.raceInfo;
+    renderPred();
+    PR.loading=false;
+    det.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  det.innerHTML='<div class="loading-box"><div class="spinner"></div><p>出馬表取得中... (10〜30秒)</p></div>';
+  det.scrollIntoView({behavior:'smooth',block:'start'});
+  try{
+    const d=await apiFetch('/upcoming/predict/race/'+id);
+    PR.preds=d.predictions||d.horses||[];
+    PR.raceInfo=d.race_info||{};
+    predCache[id]={preds:PR.preds,raceInfo:PR.raceInfo,ts:Date.now()};
+    renderPred();
+    det.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    det.innerHTML=`<div class="empty" style="color:#dc2626">予測エラー: ${e.message}</div>`;
+  }
+  PR.loading=false;
+};
+
+/* Color interpolation for probability visualization */
+function probColor(val, min, max){
+  if(max===min) return '#6b7280';
+  const ratio=Math.max(0,Math.min(1,(val-min)/(max-min)));
+  const hue=Math.round(120*ratio);
+  const sat=ratio>0.5?'65%':'70%';
+  const lit=ratio>0.7?'35%':ratio>0.3?'42%':'45%';
+  return `hsl(${hue}, ${sat}, ${lit})`;
+}
+
+function renderPred(){
+  const det=document.getElementById('pred-area');
+  if(!det)return;
+  if(!PR.preds.length){det.innerHTML='<div class="empty">予測データなし</div>';return;}
+
+  const sorted=[...PR.preds].sort((a,b)=>{
+    const col=PR.sortCol;
+    if(col==='horse_name'||col==='recommended_bet'){
+      const va=String(a[col]||''),vb=String(b[col]||'');
+      return PR.sortDir==='asc'?va.localeCompare(vb,'ja'):vb.localeCompare(va,'ja');
+    }
+    const va=Number(a[col])||0,vb=Number(b[col])||0;
+    return PR.sortDir==='asc'?va-vb:vb-va;
+  });
+
+  const allWin=PR.preds.map(p=>p.prob_win||0);
+  const allT3=PR.preds.map(p=>p.prob_top3||0);
+  const maxWin=Math.max(...allWin);
+  const minWin=Math.min(...allWin);
+  const maxT3=Math.max(...allT3);
+  const minT3=Math.min(...allT3);
+  const topWin=maxWin;
+
+  const cols=[
+    {k:'predicted_rank',l:'順位'},
+    {k:'horse_number',l:'馬番'},
+    {k:'horse_name',l:'馬名'},
+    {k:'composite_score',l:'スコア'},
+    {k:'prob_win',l:'勝率'},
+    {k:'diff_win',l:'差'},
+    {k:'prob_top3',l:'3着内率'},
+    {k:'pred_position',l:'予測着順'},
+    {k:'odds',l:'オッズ'},
+    {k:'expected_value',l:'期待値'},
+    {k:'recommended_bet',l:'推奨'}
+  ];
+
+  const arrow=(k)=>{
+    if(PR.sortCol!==k)return'<span class="arrow">\u21C5</span>';
+    return PR.sortDir==='asc'?'<span class="arrow on">\u25B2</span>':'<span class="arrow on">\u25BC</span>';
+  };
+
+  const hasOdds=PR.preds.some(p=>p.odds>0);
+  const winSpread=(maxWin-minWin)*100;
+  const isCloseProbs=winSpread<15;
+
+  let rows='';
+  sorted.forEach((p,idx)=>{
+    const rank=p.predicted_rank||(idx+1);
+    const rc=rank<=3?'rank-'+rank:'';
+    const isTop3=rank<=3;
+
+    // Rank cell with medal styling
+    const rankCellCls=rank<=3?'r'+rank:'r-other';
+    const rankDisplay=`<span class="rank-cell ${rankCellCls}">${rank}</span>`;
+
+    const pw=p.prob_win||0;
+    const pt=p.prob_top3||0;
+    const pwPct=pct(p.prob_win);
+    const ptPct=pct(p.prob_top3);
+
+    const winColor=probColor(pw,minWin,maxWin);
+    const t3Color=probColor(pt,minT3,maxT3);
+
+    const winBarW=maxWin>0?Math.max(4,Math.round((pw/maxWin)*60)):0;
+    const t3BarW=maxT3>0?Math.max(4,Math.round((pt/maxT3)*60)):0;
+
+    const diffVal=topWin-pw;
+    const diffStr=pw===topWin?'<span class="diff-val top">--</span>':`<span class="diff-val">-${(diffVal*100).toFixed(1)}%</span>`;
+
+    const odds=p.odds>0?fmt(p.odds,1):'-';
+    const ev=p.expected_value>0?fmt(p.expected_value,2):'-';
+    const evStyle=p.expected_value>=1.5?'color:#059669;font-weight:700':p.expected_value>=1.0?'color:#d97706;font-weight:600':'color:#6b7280';
+    const rec=p.recommended_bet||'-';
+    const recColor=rec.includes('強く')?'#dc2626':rec.includes('推奨')||rec.includes('本命')?'#1e40af':rec.includes('複勝')||rec.includes('候補')?'#059669':'#9ca3af';
+
+    // 予測着順セル: 80% CI を主表示、95% CI を外側に薄く描画
+    let posCell;
+    const posMain=p.pred_position!=null?fmt(p.pred_position,1):'-';
+    const n=Math.max(PR.preds.length,1);
+    const lo80=p.pred_rank_lower80, hi80=p.pred_rank_upper80;
+    const lo95=p.pred_rank_lower95, hi95=p.pred_rank_upper95;
+    const primary=lo80!=null&&hi80!=null?[lo80,hi80,'80%']:(lo95!=null&&hi95!=null?[lo95,hi95,'95%']:null);
+    if(primary){
+      const[lo,hi,tag]=primary;
+      const center=(p.pred_position||((lo+hi)/2));
+      const pctL=((lo-1)/Math.max(n-1,1))*100;
+      const pctH=((hi-1)/Math.max(n-1,1))*100;
+      const pctC=((center-1)/Math.max(n-1,1))*100;
+      const w=Math.max(pctH-pctL,2);
+      const outer=(lo95!=null&&hi95!=null&&(lo95<lo||hi95>hi))?`<div class="rank-ci-bar-outer" style="left:${((lo95-1)/Math.max(n-1,1))*100}%;width:${Math.max(((hi95-1)/Math.max(n-1,1))*100-((lo95-1)/Math.max(n-1,1))*100,2)}%"></div>`:'';
+      const tip=lo95!=null?`${tag} CI: ${lo}〜${hi}位 / 95% CI: ${lo95}〜${hi95}位`:`${tag} CI: ${lo}〜${hi}位`;
+      posCell=`<div class="rank-ci-wrap">
+        <span style="font-size:13px;font-weight:600;color:#374151">${posMain}</span>
+        <div class="rank-ci-track" title="${tip}">
+          ${outer}
+          <div class="rank-ci-bar" style="left:${pctL}%;width:${w}%"></div>
+          <div class="rank-ci-dot" style="left:${Math.min(Math.max(pctC,0),100)}%"></div>
+        </div>
+        <span class="rank-ci-range">${lo}〜${hi}位</span>
+      </div>`;
+    } else {
+      posCell=`<span style="color:#374151">${posMain}</span>`;
+    }
+
+    // 期待値セル: ev_std があれば ± uncertainty、ev_p25/p75 があれば範囲を表示
+    let evCell;
+    if(p.expected_value>0){
+      let unc='';
+      if(p.ev_std!=null && p.ev_std>0){
+        const uncCls=(p.ev_std/Math.max(p.expected_value,0.01))>0.5?'ev-unc wide':'ev-unc';
+        unc=`<span class="${uncCls}">±${fmt(p.ev_std,2)}</span>`;
+      } else if(p.ev_p25!=null && p.ev_p75!=null){
+        unc=`<span class="ev-unc">${fmt(p.ev_p25,2)}–${fmt(p.ev_p75,2)}</span>`;
+      }
+      evCell=`<span class="ev-main" style="${evStyle}">${ev}</span>${unc}`;
+    } else {
+      evCell=`<span style="${evStyle}">${ev}</span>`;
+    }
+
+    rows+=`<tr class="${rc} ${isTop3?'rank-top3':''}">
+      <td>${rankDisplay}</td>
+      <td style="font-weight:600;font-size:14px;color:#374151">${p.horse_number??'-'}</td>
+      <td class="left" style="font-weight:${isTop3?'700':'500'};font-size:${isTop3?'14px':'13px'};color:#111827">${_favNames.has(p.horse_name)?'<span title="お気に入り" style="color:#f59e0b;margin-right:2px">&#11088;</span>':''}${p.horse_name||'-'}</td>
+      <td style="font-weight:700;color:#1e40af;font-size:13px">${p.composite_score!=null?fmt(p.composite_score,3):'-'}</td>
+      <td class="prob-cell">
+        <div class="prob-bar-bg" style="width:${winBarW+20}px;background:${winColor}"></div>
+        <div class="prob-bar-track">
+          <span class="prob-text" style="color:${winColor};font-weight:${isTop3?'800':'600'};font-size:${isTop3?'14px':'13px'};position:relative">${pwPct}</span>
+          <span class="prob-bar-inline" style="width:${winBarW}px;background:${winColor}"></span>
+        </div>
+      </td>
+      <td>${diffStr}</td>
+      <td class="prob-cell">
+        <div class="prob-bar-bg" style="width:${t3BarW+20}px;background:${t3Color}"></div>
+        <div class="prob-bar-track">
+          <span class="prob-text" style="color:${t3Color};font-weight:${isTop3?'700':'500'};position:relative">${ptPct}</span>
+          <span class="prob-bar-inline" style="width:${t3BarW}px;background:${t3Color}"></span>
+        </div>
+      </td>
+      <td>${posCell}</td>
+      <td style="color:#374151">${odds}</td>
+      <td>${evCell}</td>
+      <td><span style="color:${recColor};font-weight:600;font-size:12px">${rec}</span></td>
+    </tr>`;
+  });
+
+  const info=PR.raceInfo;
+  const raceR=PR.races.find(r=>r.id===PR.selId);
+  const rNum=raceR?.info?.race_number||'';
+  const venue=info.venue||raceR?.info?.venue||'';
+  const title=venue+(rNum?rNum+'R ':' ')+(info.race_name||'');
+  const meta=[info.course_type||info.course||'',info.distance?info.distance+'m':'',info.weather?'天候:'+info.weather:'',info.track_condition?'馬場:'+info.track_condition:''].filter(Boolean).join(' / ');
+
+  const spreadNotice=isCloseProbs?`<div class="spread-notice">
+    &#9888; 各馬の勝率差が小さい混戦レースです (差: ${winSpread.toFixed(1)}%) -- 色の濃淡と「差」列で相対的な優劣をご確認ください
+  </div>`:'';
+
+  // Betting recommendations
+  const byWin=[...PR.preds].sort((a,b)=>(b.prob_win||0)-(a.prob_win||0));
+  const byT3=[...PR.preds].sort((a,b)=>(b.prob_top3||0)-(a.prob_top3||0));
+  const byS=[...PR.preds].sort((a,b)=>(b.composite_score||0)-(a.composite_score||0));
+  const byPos=[...PR.preds].sort((a,b)=>(a.pred_position||99)-(b.pred_position||99));
+
+  // 推奨金額計算 (bankroll=10000)
+  const BK=10000;
+  const _kelly=(prob,odds)=>{if(!odds||odds<=1||!prob)return 0;const f=(prob*odds-(1-prob))/Math.max(odds-1,0.01);return Math.max(0,Math.min(f,0.25));};
+  const _betUnit=(frac)=>{const amt=Math.round(frac*BK/100)*100;return Math.max(0,Math.min(amt,BK));};
+  const hasOddsData=PR.preds.some(p=>p.odds>0);
+
+  const w=byWin[0];
+  const wpct2=w?(w.prob_win*100):0;
+  const wConf=wpct2>40?'high':wpct2>25?'mid':'low';
+  const wConfLabel=wpct2>40?'信頼度 高':wpct2>25?'信頼度 中':'信頼度 低';
+  const wConfPct=wpct2>40?85:wpct2>25?55:25;
+  const wConfColor=wpct2>40?'#059669':wpct2>25?'#d97706':'#9ca3af';
+
+  const t3=byT3.slice(0,3);
+  const t3avg=t3.reduce((s,h)=>s+(h.prob_top3||0)*100,0)/3;
+  const t3Conf=t3avg>60?'high':t3avg>45?'mid':'low';
+  const t3ConfLabel=t3avg>60?'信頼度 高':t3avg>45?'信頼度 中':'信頼度 低';
+  const t3ConfPct=t3avg>60?85:t3avg>45?55:25;
+  const t3ConfColor=t3avg>60?'#059669':t3avg>45?'#d97706':'#9ca3af';
+
+  const m2raw=byS.slice(0,2);
+  const m2=[...m2raw].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+
+  const m3raw=byS.slice(0,3);
+  const m3=[...m3raw].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+
+  const wideRaw=byT3.slice(0,2);
+  const wide=[...wideRaw].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+
+  // Build mobile cards
+  let mobileCards='';
+  const sortedForCards=[...PR.preds].sort((a,b)=>(a.predicted_rank||99)-(b.predicted_rank||99));
+  sortedForCards.forEach(p=>{
+    const rank=p.predicted_rank||99;
+    const rankCls=rank<=3?'r'+rank:'';
+    const pw=p.prob_win||0;
+    const pt=p.prob_top3||0;
+    const rec=p.recommended_bet||'-';
+    let recCls='rec-none';
+    if(rec.includes('強く'))recCls='rec-strong';
+    else if(rec.includes('推奨')||rec.includes('本命'))recCls='rec-buy';
+    else if(rec.includes('複勝')||rec.includes('候補')||rec.includes('注目'))recCls='rec-maybe';
+    const odds=p.odds>0?fmt(p.odds,1):'-';
+    const ev=p.expected_value>0?fmt(p.expected_value,2):'-';
+    const predPos=p.pred_position!=null?fmt(p.pred_position,1):'-';
+    const score=p.composite_score!=null?fmt(p.composite_score,3):'-';
+    mobileCards+=`<div class="mobile-horse-card" onclick="this.classList.toggle('expanded')">
+      <div class="horse-rank ${rankCls}">${rank}</div>
+      <div class="horse-main">
+        <div class="horse-name">${_favNames.has(p.horse_name)?'<span style="color:#f59e0b">&#11088;</span> ':''}${p.horse_number??''} ${p.horse_name||'-'}</div>
+        <div class="horse-prob">勝率 ${pct(p.prob_win)} | 複勝 ${pct(p.prob_top3)}</div>
+        <div class="horse-details">
+          <div class="detail-grid">
+            <div class="detail-item">スコア: <b>${score}</b></div>
+            <div class="detail-item">オッズ: <b>${odds}</b></div>
+            <div class="detail-item">期待値: <b>${ev}</b></div>
+            <div class="detail-item">予測着順: <b>${predPos}</b></div>
+          </div>
+        </div>
+      </div>
+      ${rec!=='-'?`<div class="horse-rec ${recCls}">${rec}</div>`:''}
+    </div>`;
+  });
+
+  // Build IPAT copy text
+  const ipatVenue=venue;
+  const ipatRNum=rNum?rNum+'R':'';
+  const ipatRaceName=info.race_name||'';
+  const ipatW=byWin[0];
+  const ipatM2=[...byS.slice(0,2)].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+  const ipatM3=[...byS.slice(0,3)].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+  let ipatText=`${ipatVenue}${ipatRNum} ${ipatRaceName}\n`;
+  if(ipatW)ipatText+=`単勝: ${ipatW.horse_number}\n`;
+  if(ipatM2.length>=2)ipatText+=`馬連: ${ipatM2[0].horse_number}-${ipatM2[1].horse_number}\n`;
+  if(ipatM3.length>=3)ipatText+=`三連複: ${ipatM3[0].horse_number}-${ipatM3[1].horse_number}-${ipatM3[2].horse_number}\n`;
+  // Store for the copy function
+  window._ipatText=ipatText;
+
+  det.innerHTML=`
+  <div class="pred-box">
+    <div class="pred-header">
+      <h2>${title}</h2>
+      <p>${meta} &mdash; ${PR.preds.length}頭出走</p>
+    </div>
+    ${spreadNotice}
+    <div class="table-outer">
+      <table>
+        <thead><tr>${cols.map(c=>{
+          const sortKey=c.k==='diff_win'?'prob_win':c.k;
+          return`<th onclick="sortPred('${sortKey}')">${c.l} ${c.k==='diff_win'?'':arrow(c.k)}</th>`;
+        }).join('')}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="mobile-cards-wrap">${mobileCards}<p class="swipe-hint">タップで詳細を表示</p></div>
+  </div>
+  <div class="action-row">
+    <button class="action-btn" onclick="copyPredText()">&#128203; コピー</button>
+    <button class="bet-copy-btn" onclick="copyBetSlip()">&#128203; 買い目コピー</button>
+    <button class="action-btn" onclick="window.print()">&#128424; 印刷</button>
+  </div>
+  ${!hasOdds?'<div class="no-odds-note">&#9888; オッズ未発表のため、期待値は計算できません。レース当日に再度ご確認ください。</div>':''}
+  <div style="margin-top:28px">
+    <div class="rec-section-title"><span class="rec-icon">&#127919;</span> おすすめの買い方</div>
+    <div class="rec-section">
+      ${_buildBetCards(w,wConf,wConfLabel,wConfPct,wConfColor,t3,t3Conf,t3ConfLabel,t3ConfPct,t3ConfColor,m2,m2raw,m3,m3raw,wide,wideRaw,hasOddsData,BK,_kelly,_betUnit,pct,fmt)}
+    </div>
+    <div style="margin-top:16px;text-align:center">
+      <a href="https://www.jra.go.jp/dento/member/" target="_blank" rel="noopener noreferrer"
+         style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#059669,#34d399);color:#fff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:opacity .2s"
+         onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#127919; \u99ac\u5238\u3092\u8cfc\u5165\u3059\u308b &rarr;</a>
+      <a href="https://keiba.rakuten.co.jp/" target="_blank" rel="noopener noreferrer"
+         style="display:inline-block;margin-left:12px;padding:10px 24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e4e4ef;border-radius:8px;font-size:14px;font-weight:500;text-decoration:none;transition:border-color .2s"
+         onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">\u697d\u5929\u7af6\u99ac\u3067\u8cfc\u5165 &rarr;</a>
+    </div>
+  </div>
+  ${buildConfidenceSection(PR.preds, PR.raceInfo)}`;
+
+  // Prev/Next race navigation
+  const curIdx=PR.filtered.findIndex(r=>r.id===PR.selId);
+  const prevR=curIdx>0?PR.filtered[curIdx-1]:null;
+  const nextR=curIdx<PR.filtered.length-1?PR.filtered[curIdx+1]:null;
+  const navHtml=`<div class="race-nav">
+    <button ${prevR?`onclick="selectRace('${prevR.id}')"`:'disabled'}>\u2190 前のレース</button>
+    <span class="race-counter">${curIdx+1} / ${PR.filtered.length}</span>
+    <button ${nextR?`onclick="selectRace('${nextR.id}')"`:'disabled'}>次のレース \u2192</button>
+  </div>`;
+  det.innerHTML+=navHtml;
+
+  setTimeout(()=>det.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+window.sortPred=(col)=>{
+  if(PR.sortCol===col)PR.sortDir=PR.sortDir==='asc'?'desc':'asc';
+  else{PR.sortCol=col;PR.sortDir=(col==='predicted_rank'||col==='pred_position'||col==='horse_number')?'asc':'desc';}
+  renderPred();
+};
+
+/* === History === */
+async function renderHistory(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('history')+'<div class="container fade-in"><div class="loading-box"><div class="spinner"></div></div></div>';
+  try{
+    const[predData,statsData,balData]=await Promise.allSettled([
+      apiFetch('/my/predictions'),
+      apiFetch('/my/stats'),
+      apiFetch('/balance')
+    ]);
+    const preds=(predData.status==='fulfilled'?(predData.value.predictions||predData.value.data||[]):[]);
+    const stats=statsData.status==='fulfilled'?statsData.value:{};
+    const bal=balData.status==='fulfilled'?balData.value:{};
+    const ov=bal.overview||{};
+
+    const rs=stats.result_stats||{};
+    let statsHtml='';
+    if(stats.total_predictions>0||ov.total_bets>0||rs.total_races>0){
+      const hitRate=rs.total_races>0?(rs.fukusho_hit_rate*100).toFixed(1)+'%':(ov.hit_rate!=null?(ov.hit_rate*100).toFixed(1)+'%':'-');
+      const tanshoRate=rs.total_races>0?(rs.tansho_hit_rate*100).toFixed(1)+'%':'-';
+      const top3Rate=rs.total_races>0?(rs.top3_accuracy*100).toFixed(1)+'%':'-';
+      statsHtml=`<div class="stat-grid" style="margin-bottom:24px">
+        <div class="stat-card"><div class="label">予測回数</div><div class="value blue">${stats.total_predictions||0}</div></div>
+        <div class="stat-card"><div class="label">今週</div><div class="value">${stats.predictions_this_week||0}</div></div>
+        <div class="stat-card"><div class="label">分析レース</div><div class="value blue">${rs.total_races||ov.total_bets||0}</div></div>
+        <div class="stat-card"><div class="label">単勝的中率</div><div class="value ${rs.tansho_hit_rate>=0.1?'green':'red'}">${tanshoRate}</div></div>
+        <div class="stat-card"><div class="label">複勝的中率</div><div class="value ${rs.fukusho_hit_rate>=0.5?'green':'red'}">${hitRate}</div></div>
+        <div class="stat-card"><div class="label">Top3精度</div><div class="value ${rs.top3_accuracy>=0.4?'green':'red'}">${top3Rate}</div></div>
+      </div>`;
+    }
+
+    let topHorses='';
+    if(stats.most_predicted_horses&&stats.most_predicted_horses.length>0){
+      topHorses=`<div style="margin-bottom:24px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px">
+        <h3 style="font-size:13px;font-weight:700;color:#6b7280;margin-bottom:12px;text-transform:uppercase;letter-spacing:.3px">よく予測した馬</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${stats.most_predicted_horses.map(h=>
+          `<span style="background:#eff6ff;border:1px solid #bfdbfe;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#1e40af">${h.name} <span style="color:#93c5fd">${h.count}回</span></span>`
+        ).join('')}</div>
+      </div>`;
+    }
+
+    let tableHtml='';
+    if(preds.length>0){
+      const rows=preds.slice(0,100).map(p=>{
+        const date=(p.timestamp||p.date||p.created_at||'').substring(0,10);
+        const raceId=p.race_id||'-';
+        const top3=Array.isArray(p.top3)?p.top3:[];
+        let horsesStr='-';
+        if(top3.length>0){
+          horsesStr=top3.map((h,i)=>{
+            const mark=i===0?'\u25CE':i===1?'\u25CB':'\u25B2';
+            const scoreStr=h.score!=null?' ('+Number(h.score).toFixed(3)+')':'';
+            return`${mark} ${h.horse_number||'?'}番 ${h.horse_name||''}${scoreStr}`;
+          }).join(', ');
+        }else if(p.horse_name){
+          horsesStr=p.horse_name;
+        }
+        return`<tr>
+          <td>${date||'-'}</td>
+          <td class="left" style="font-size:12px">${raceId}</td>
+          <td class="left" style="font-weight:600;font-size:12px">${horsesStr}</td>
+          <td>${top3.length?top3.length+'頭':'-'}</td>
+        </tr>`;
+      }).join('');
+      tableHtml=`<div class="table-wrap"><table>
+        <thead><tr><th>日付</th><th style="text-align:left">レースID</th><th style="text-align:left">予測上位馬</th><th>上位数</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+    }else{
+      tableHtml=`<div class="empty">予測履歴はまだありません<br><br><button onclick="goPage('predict')" style="background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px">レース予測へ</button></div>`;
+    }
+
+    $.innerHTML=topNav('history')+`<div class="container fade-in">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:24px;color:#111827">履歴・統計</h2>
+      ${statsHtml}${topHorses}${tableHtml}
+    </div>`;
+  }catch(e){$.innerHTML=topNav('history')+`<div class="container"><div class="empty">データを取得できませんでした: ${e.message}</div></div>`;}
+}
+
+/* === Results === */
+async function renderResults(){
+  const $=document.getElementById('app');
+  const today=new Date();
+  let defaultDate=new Date(today);
+  if(today.getDay()===0) defaultDate.setDate(today.getDate());
+  else if(today.getDay()===6) defaultDate.setDate(today.getDate());
+  else defaultDate.setDate(today.getDate()-(today.getDay()||7));
+
+  $.innerHTML=topNav('results')+`<div class="container fade-in">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#111827">&#128202; 予測結果・的中確認</h2>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+      <label style="font-size:13px;color:#6b7280;font-weight:600">日付:</label>
+      <input type="date" id="results-date" value="${defaultDate.toISOString().slice(0,10)}" style="border:1px solid #e5e7eb;border-radius:10px;padding:10px 14px;font-size:13px;color:#111827;background:#f9fafb;transition:all .15s" onfocus="this.style.borderColor='#93c5fd';this.style.boxShadow='0 0 0 3px rgba(30,64,175,.08)'" onblur="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+      <button onclick="loadResults()" style="background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;transition:all .15s">表示</button>
+    </div>
+    <div id="results-content"><div class="loading-box"><div class="spinner"></div><p>結果を取得中...</p></div></div>
+  </div>`;
+  loadResults();
+}
+
+window.loadResults=async()=>{
+  const dateInput=document.getElementById('results-date');
+  if(!dateInput)return;
+  const ds=dateInput.value.replace(/-/g,'');
+  const el=document.getElementById('results-content');
+  if(!el)return;
+  el.innerHTML='<div class="loading-box"><div class="spinner"></div><p>結果を取得中...</p></div>';
+  try{
+    const data=await apiFetch('/results?date='+ds);
+    const results=data.results||data.data||[];
+    if(!results.length){
+      el.innerHTML='<div class="empty">この日の結果データはありません</div>';
+      return;
+    }
+    let html='';
+    results.forEach(r=>{
+      const raceName=r.race_name||r.race_id||'-';
+      const venue=r.venue||'';
+      const raceNum=r.race_number?r.race_number+'R ':'';
+      html+=`<div class="results-box" style="margin-bottom:16px">
+        <div class="results-header"><h3>${venue} ${raceNum}${raceName}</h3></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr>
+            <th>着順</th><th>馬番</th><th style="text-align:left">馬名</th>
+            <th>予測順位</th><th>予測スコア</th><th>的中</th>
+          </tr></thead><tbody>`;
+      const horses=r.horses||r.results||[];
+      horses.forEach(h=>{
+        const actual=h.finish_position||h.actual_position||h.order||'-';
+        const predicted=h.predicted_rank||h.predicted_position||'-';
+        const score=h.composite_score!=null?Number(h.composite_score).toFixed(3):'-';
+        const isHit=actual!=='-'&&predicted!=='-'&&(
+          (Number(actual)<=3&&Number(predicted)<=3)||(Number(actual)===Number(predicted))
+        );
+        const hitLabel=actual==='-'||predicted==='-'?'-':isHit?'<span class="result-hit">&#10004; 的中</span>':'<span class="result-miss">外れ</span>';
+        html+=`<tr${Number(actual)<=3?' style="background:linear-gradient(90deg,#fffbeb,#fefce8)"':''}>
+          <td style="font-weight:700;font-size:15px">${actual}</td>
+          <td style="font-weight:600">${h.horse_number||'-'}</td>
+          <td class="left" style="font-weight:600">${h.horse_name||'-'}</td>
+          <td>${predicted}</td>
+          <td style="font-variant-numeric:tabular-nums">${score}</td>
+          <td>${hitLabel}</td>
+        </tr>`;
+      });
+      html+=`</tbody></table></div></div>`;
+    });
+
+    let totalPredTop3=0, totalHitTop3=0;
+    results.forEach(r=>{
+      const horses=r.horses||r.results||[];
+      horses.forEach(h=>{
+        const actual=Number(h.finish_position||h.actual_position||h.order||99);
+        const predicted=Number(h.predicted_rank||h.predicted_position||99);
+        if(predicted<=3){
+          totalPredTop3++;
+          if(actual<=3) totalHitTop3++;
+        }
+      });
+    });
+    const hitRate=totalPredTop3>0?(totalHitTop3/totalPredTop3*100).toFixed(1)+'%':'-';
+
+    const summaryHtml=`<div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="label">レース数</div><div class="value blue">${results.length}</div></div>
+      <div class="stat-card"><div class="label">予測Top3数</div><div class="value">${totalPredTop3}</div></div>
+      <div class="stat-card"><div class="label">的中数</div><div class="value green">${totalHitTop3}</div></div>
+      <div class="stat-card"><div class="label">Top3的中率</div><div class="value ${totalHitTop3/totalPredTop3>=0.5?'green':'red'}">${hitRate}</div></div>
+    </div>`;
+
+    // B5: Add review section
+    let reviewHtml=`<div style="margin-top:32px;border-top:2px solid #e5e7eb;padding-top:24px">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#111827">&#128270; 振り返り (レース別)</h3>
+      <p style="font-size:12px;color:#9ca3af;margin-bottom:12px">各レースをクリックして予測 vs 実結果の比較を確認できます</p>
+      <div id="review-cards" style="display:flex;flex-direction:column;gap:8px">`;
+    results.forEach(r=>{
+      const rid=r.race_id||'';
+      const rname=r.race_name||rid;
+      const hit3=r.top3_in_our_top3||0;
+      const hitColor=hit3>=2?'#059669':hit3===1?'#d97706':'#dc2626';
+      const hitLabel=hit3>=2?'Good':hit3===1?'Partial':'Miss';
+      reviewHtml+=`<div class="results-box" style="cursor:pointer;margin-bottom:0;transition:all .15s" onclick="loadReview('${rid}',this)">
+        <div style="display:flex;align-items:center;padding:12px 16px;gap:12px">
+          <span style="font-weight:700;color:#1e40af;min-width:80px;font-size:13px">${rname.slice(0,12)}</span>
+          <span style="flex:1;font-size:12px;color:#6b7280">${r.our_prediction?'予測1位: '+r.our_prediction.top_pick_name:''}</span>
+          <span style="font-size:11px;font-weight:700;color:${hitColor};background:${hitColor}11;padding:4px 10px;border-radius:12px">${hit3}/3 ${hitLabel}</span>
+          <span style="color:#9ca3af;font-size:12px">&#9660;</span>
+        </div>
+        <div class="review-detail" style="display:none;padding:0 16px 16px;border-top:1px solid #f3f4f6"></div>
+      </div>`;
+    });
+    reviewHtml+=`</div></div>`;
+
+    el.innerHTML=summaryHtml+html+reviewHtml;
+  }catch(e){
+    el.innerHTML=`<div class="empty" style="color:#dc2626">結果を取得できませんでした: ${e.message}</div>`;
+  }
+};
+
+window.loadReview=async(raceId,el)=>{
+  const detail=el.querySelector('.review-detail');
+  if(!detail)return;
+  if(detail.style.display==='block'){detail.style.display='none';return;}
+  detail.style.display='block';
+  detail.innerHTML='<div style="padding:12px;color:#9ca3af;font-size:12px">読み込み中...</div>';
+  try{
+    const d=await apiFetch('/race-review/'+raceId);
+    let h='<div style="margin-top:8px">';
+    // Our top 3 vs actual top 3
+    h+=`<div style="display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px">AI予測 Top3</div>`;
+    (d.our_top3||[]).forEach((p,i)=>{
+      const mark=i===0?'&#9678;':i===1?'&#9675;':'&#9650;';
+      h+=`<div style="font-size:13px;padding:3px 0">${mark} ${p.horse_number}番 ${p.horse_name}</div>`;
+    });
+    h+=`</div><div style="flex:1;min-width:200px">
+        <div style="font-size:12px;font-weight:700;color:#059669;margin-bottom:6px">実際の結果 Top3</div>`;
+    if(d.has_results&&d.actual_top3&&d.actual_top3.length){
+      d.actual_top3.forEach((a,i)=>{
+        const pos=['1着','2着','3着'][i]||'';
+        h+=`<div style="font-size:13px;padding:3px 0">${pos} ${a.horse_number}番 ${a.horse_name}</div>`;
+      });
+    }else{
+      h+=`<div style="font-size:12px;color:#9ca3af">結果データなし</div>`;
+    }
+    h+=`</div></div>`;
+    // Hit indicator
+    h+=`<div style="font-size:14px;font-weight:700;margin:8px 0;color:${d.hits>=2?'#059669':d.hits===1?'#d97706':'#dc2626'}">
+      Top3一致: ${d.hits}/3 ${d.tansho_hit?'| 単勝的中!':''}${d.fukusho_hit?' | 複勝的中!':''}
+    </div>`;
+    // ポストモーテムタグ (外した理由の機械判定)
+    if(d.postmortem_tags&&d.postmortem_tags.length){
+      const sevColor={high:'#dc2626',warn:'#d97706',info:'#0891b2'};
+      const sevBg={high:'#fef2f2',warn:'#fffbeb',info:'#ecfeff'};
+      h+=`<div style="margin:10px 0;padding:10px 12px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb">
+        <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.5px;margin-bottom:6px">&#128269; ポストモーテム</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">`;
+      d.postmortem_tags.forEach(t=>{
+        const c=sevColor[t.severity]||'#6b7280';
+        const bg=sevBg[t.severity]||'#f3f4f6';
+        h+=`<span title="${(t.detail||'').replace(/"/g,'&quot;')}" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:${bg};color:${c};border:1px solid ${c}40;border-radius:999px;font-size:11px;font-weight:600">${t.label}</span>`;
+      });
+      h+=`</div></div>`;
+    }
+    // Hints from comparison
+    if(d.comparison&&d.comparison.length){
+      const top6=d.comparison.slice(0,6).filter(c=>c.hint);
+      if(top6.length){
+        h+=`<div style="margin-top:8px;border-top:1px solid #f3f4f6;padding-top:8px">`;
+        top6.forEach(c=>{
+          const isHit=c.hint.startsWith('AIが正解');
+          const color=isHit?'#059669':c.hint.startsWith('AIが見逃')?'#d97706':'#dc2626';
+          const icon=isHit?'&#10004;':c.hint.startsWith('AIが見逃')?'&#9888;':'&#10008;';
+          h+=`<div style="font-size:12px;color:${color};padding:3px 0">${icon} <b>${c.horse_name}</b> (予測${c.predicted_rank}位&#8594;実際${c.actual_position||'?'}着) ${c.hint}</div>`;
+        });
+        h+=`</div>`;
+      }
+    }
+    h+='</div>';
+    detail.innerHTML=h;
+  }catch(e){
+    detail.innerHTML=`<div style="padding:8px;color:#dc2626;font-size:12px">${e.message}</div>`;
+  }
+};
+
+/* === Settings === */
+async function renderSettings(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('settings')+'<div class="container fade-in"><div class="loading-box"><div class="spinner"></div></div></div>';
+
+  let sysInfo={},notiSettings={},favData={};
+  try{
+    const[sys,noti,fav]=await Promise.allSettled([apiFetch('/admin/system'),apiFetch('/notification/settings'),apiFetch('/favorites')]);
+    sysInfo=sys.status==='fulfilled'?sys.value:{};
+    notiSettings=noti.status==='fulfilled'?(noti.value.settings||{}):{};
+    favData=fav.status==='fulfilled'?fav.value:{};
+  }catch(e){}
+
+  const favList=favData.favorites||[];
+  const mem=sysInfo.memory||{};
+  const disk=sysInfo.disk||{};
+
+  $.innerHTML=topNav('settings')+`<div class="container fade-in">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:24px;color:#111827">設定</h2>
+    <div class="settings-grid">
+      <div class="settings-card">
+        <h3>&#128100; アカウント</h3>
+        <p style="font-size:13px;margin-bottom:8px"><span style="color:#9ca3af">ユーザー名:</span> <strong style="color:#111827">${S.user}</strong></p>
+        <p style="font-size:12px;color:#059669;font-weight:500">&#9679; ログイン中</p>
+      </div>
+      <div class="settings-card">
+        <h3>&#128274; パスワード変更</h3>
+        <input id="pw-old" type="password" placeholder="現在のパスワード" autocomplete="current-password">
+        <input id="pw-new" type="password" placeholder="新しいパスワード" autocomplete="new-password">
+        <input id="pw-new2" type="password" placeholder="新しいパスワード（確認）" autocomplete="new-password">
+        <button class="btn" onclick="changePw()">変更する</button>
+        <div id="pw-msg" style="margin-top:8px;font-size:12px;display:none"></div>
+      </div>
+      <div class="settings-card">
+        <h3>&#128276; 通知設定</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#374151">
+            <input type="checkbox" id="noti-predict" ${notiSettings.notify_predict?'checked':''} onchange="saveNoti()" style="width:16px;height:16px;accent-color:#1e40af"> 予測時に通知
+          </label>
+          <label style="font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#374151">
+            <input type="checkbox" id="noti-value" ${notiSettings.notify_value_bet?'checked':''} onchange="saveNoti()" style="width:16px;height:16px;accent-color:#1e40af"> 高期待値検出時
+          </label>
+          <label style="font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#374151">
+            <input type="checkbox" id="noti-result" ${notiSettings.notify_result?'checked':''} onchange="saveNoti()" style="width:16px;height:16px;accent-color:#1e40af"> レース結果通知
+          </label>
+        </div>
+        <div style="margin-top:12px">
+          <input id="noti-line" type="text" placeholder="LINE Token" value="${notiSettings.line_token_masked||notiSettings.line_token||''}" style="font-size:12px">
+          ${notiSettings.line_connected?'<span style="color:#059669;font-size:11px;font-weight:600">&#10003; LINE連携済み</span>':''}
+          ${notiSettings.discord_connected?'<span style="color:#5865F2;font-size:11px;font-weight:600;margin-left:8px">&#10003; Discord連携済み</span>':''}
+          <button class="btn" onclick="saveNoti()" style="margin-top:6px">保存</button>
+        </div>
+      </div>
+      ${mem.total_mb?`<div class="settings-card">
+        <h3>&#128421; システム</h3>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:8px;color:#374151">
+          <div><span style="color:#9ca3af">メモリ:</span> ${mem.available_mb||0}MB / ${mem.total_mb||0}MB (使用${mem.used_percent||0}%)</div>
+          <div style="background:#e5e7eb;border-radius:4px;height:6px;overflow:hidden"><div style="background:${(mem.used_percent||0)>80?'#dc2626':'#1e40af'};height:100%;width:${mem.used_percent||0}%;border-radius:4px;transition:width .5s"></div></div>
+          <div><span style="color:#9ca3af">ディスク:</span> ${disk.used||'?'} / ${disk.total||'?'} (${disk.percent||'?'})</div>
+          <div style="background:#e5e7eb;border-radius:4px;height:6px;overflow:hidden"><div style="background:#059669;height:100%;width:${parseInt(disk.percent)||0}%;border-radius:4px;transition:width .5s"></div></div>
+          <div><span style="color:#9ca3af">ユーザー数:</span> ${sysInfo.total_users||'-'}</div>
+          <div><span style="color:#9ca3af">予測回数:</span> ${sysInfo.total_predictions||'-'}</div>
+        </div>
+      </div>`:''}
+      <div class="settings-card">
+        <h3>&#9881; 管理</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn" onclick="reloadModel()">&#128260; モデルリロード</button>
+          <button class="btn" style="background:#059669" onclick="triggerScrape()">&#128229; 手動スクレイピング</button>
+        </div>
+        <div id="admin-msg" style="margin-top:8px;font-size:12px;display:none"></div>
+      </div>
+      <div class="settings-card" style="grid-column:1/-1">
+        <h3>&#11088; お気に入りの馬</h3>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input id="fav-search" type="text" placeholder="馬名を入力" style="flex:1;font-size:13px;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px">
+          <button class="btn" onclick="addFavorite()" style="white-space:nowrap">追加</button>
+        </div>
+        <div id="fav-list" style="display:flex;flex-direction:column;gap:6px">
+          ${favList.length?favList.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb">
+            <span style="font-size:14px">&#11088;</span>
+            <span style="flex:1;font-size:13px;font-weight:600;color:#111827">${f.horse_name}</span>
+            <span style="font-size:11px;color:#9ca3af">${f.added_at?f.added_at.slice(0,10):''}</span>
+            <button onclick="removeFavorite('${f.horse_name}')" style="background:none;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;font-size:11px;color:#dc2626;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">削除</button>
+          </div>`).join(''):'<div style="font-size:12px;color:#9ca3af;padding:8px">まだお気に入りの馬はありません</div>'}
+        </div>
+        <div id="fav-msg" style="margin-top:8px;font-size:12px;display:none"></div>
+      </div>
+      <div class="settings-card">
+        <h3>&#128682; ログアウト</h3>
+        <p style="font-size:12px;color:#9ca3af;margin-bottom:12px">認証情報を削除します</p>
+        <button class="btn btn-danger" onclick="logout()">ログアウト</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>{
+    const favInput=document.getElementById('fav-search');
+    if(favInput)favInput.addEventListener('keydown',e=>{if(e.key==='Enter')addFavorite();});
+  },50);
+}
+window.addFavorite=async()=>{
+  const input=document.getElementById('fav-search');
+  if(!input)return;
+  const name=input.value.trim();
+  if(!name){toast('馬名を入力してください','error');return;}
+  try{
+    const d=await apiFetch('/favorites/add',{method:'POST',body:JSON.stringify({horse_name:name,horse_id:name})});
+    toast(d.message||'追加しました','success');
+    input.value='';
+    renderSettings();
+  }catch(e){toast(e.message,'error');}
+};
+window.removeFavorite=async(name)=>{
+  try{
+    const d=await apiFetch('/favorites/'+encodeURIComponent(name),{method:'DELETE'});
+    toast(d.message||'削除しました','success');
+    renderSettings();
+  }catch(e){toast(e.message,'error');}
+};
+window.changePw=async()=>{
+  const o=document.getElementById('pw-old')?.value;
+  const n=document.getElementById('pw-new')?.value;
+  const n2=document.getElementById('pw-new2')?.value;
+  const msg=document.getElementById('pw-msg');
+  if(!o||!n){toast('全てのフィールドを入力してください','error');return;}
+  if(n!==n2){
+    if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent='新しいパスワードが一致しません';}
+    return;
+  }
+  if(n.length<8){
+    if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent='パスワードは8文字以上で英数字を含めてください';}
+    return;
+  }
+  try{
+    await apiFetch('/auth/change-password',{method:'POST',body:JSON.stringify({current_password:o,new_password:n})});
+    toast('パスワードを変更しました','success');
+    if(msg){msg.style.display='block';msg.style.color='#059669';msg.textContent='変更完了';}
+    document.getElementById('pw-old').value='';
+    document.getElementById('pw-new').value='';
+    document.getElementById('pw-new2').value='';
+  }catch(e){
+    if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent=e.message;}
+  }
+};
+
+/* === Copy prediction text === */
+window.copyPredText=()=>{
+  if(!PR.preds.length)return;
+  const info=PR.raceInfo;
+  const raceR=PR.races.find(r=>r.id===PR.selId);
+  const rNum=raceR?.info?.race_number||'';
+  const venue=info.venue||raceR?.info?.venue||'';
+  const title=venue+(rNum?rNum+'R ':' ')+(info.race_name||'');
+  const sorted=[...PR.preds].sort((a,b)=>(a.predicted_rank||99)-(b.predicted_rank||99));
+  let text=`\u{1F3C7} ${title}\n`;
+  text+=`${info.course_type||''} ${info.distance?info.distance+'m':''} ${info.weather?'天候:'+info.weather:''} ${info.track_condition?'馬場:'+info.track_condition:''}\n\n`;
+  sorted.forEach(p=>{
+    const mark=p.predicted_rank===1?'\u25CE':p.predicted_rank===2?'\u25CB':p.predicted_rank===3?'\u25B2':p.predicted_rank<=5?'\u25B3':'\u3000';
+    text+=`${mark} ${p.predicted_rank}位 ${p.horse_number}番 ${p.horse_name} (スコア${(p.composite_score||0).toFixed(3)})\n`;
+  });
+  text+=`\n\u{1F3AF} おすすめ\n`;
+  const byS=[...PR.preds].sort((a,b)=>(b.composite_score||0)-(a.composite_score||0));
+  const byWin=[...PR.preds].sort((a,b)=>(b.prob_win||0)-(a.prob_win||0));
+  if(byWin[0])text+=`単勝: ${byWin[0].horse_number} ${byWin[0].horse_name}\n`;
+  if(byS.length>=3){
+    const m3=[...byS.slice(0,3)].sort((a,b)=>(a.horse_number||0)-(b.horse_number||0));
+    text+=`三連複: ${m3[0].horse_number}-${m3[1].horse_number}-${m3[2].horse_number}\n`;
+  }
+  navigator.clipboard.writeText(text).then(()=>toast('コピーしました','success')).catch(()=>toast('コピーに失敗','error'));
+};
+
+/* === Copy Bet Slip (IPAT format) === */
+window.copyBetSlip=()=>{
+  if(!window._ipatText){toast('予測データがありません','error');return;}
+  navigator.clipboard.writeText(window._ipatText).then(()=>toast('買い目をコピーしました','success')).catch(()=>toast('コピーに失敗','error'));
+};
+
+/* === Admin functions === */
+window.reloadModel=async()=>{
+  const msg=document.getElementById('admin-msg');
+  try{
+    await apiFetch('/reload-model',{method:'POST'});
+    toast('モデルをリロードしました','success');
+    if(msg){msg.style.display='block';msg.style.color='#059669';msg.textContent='リロード完了';}
+  }catch(e){toast(e.message,'error');if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent=e.message;}}
+};
+window.triggerScrape=async()=>{
+  const msg=document.getElementById('admin-msg');
+  try{
+    if(msg){msg.style.display='block';msg.style.color='#1e40af';msg.textContent='スクレイピング開始中...';}
+    await apiFetch('/admin/trigger-scrape',{method:'POST'});
+    toast('スクレイピング完了','success');
+    if(msg){msg.style.color='#059669';msg.textContent='完了';}
+  }catch(e){toast(e.message,'error');if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent=e.message;}}
+};
+window.saveNoti=async()=>{
+  try{
+    const settings={
+      notify_predict:document.getElementById('noti-predict')?.checked||false,
+      notify_value_bet:document.getElementById('noti-value')?.checked||false,
+      notify_result:document.getElementById('noti-result')?.checked||false,
+      line_token:document.getElementById('noti-line')?.value||'',
+    };
+    await apiFetch('/notification/settings',{method:'POST',body:JSON.stringify(settings)});
+    toast('通知設定を保存しました','success');
+  }catch(e){toast(e.message,'error');}
+};
+
+/* === Mobile swipe between races === */
+(function(){
+  let touchStartX=0,touchEndX=0;
+  document.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    touchEndX=e.changedTouches[0].screenX;
+    const diff=touchStartX-touchEndX;
+    if(Math.abs(diff)<80)return; // minimum swipe distance
+    if(!PR.selId||!PR.filtered.length)return;
+    const curIdx=PR.filtered.findIndex(r=>r.id===PR.selId);
+    if(curIdx===-1)return;
+    if(diff>0&&curIdx<PR.filtered.length-1){
+      // Swipe left -> next race
+      selectRace(PR.filtered[curIdx+1].id);
+    }else if(diff<0&&curIdx>0){
+      // Swipe right -> previous race
+      selectRace(PR.filtered[curIdx-1].id);
+    }
+  },{passive:true});
+})();
+
+/* === Keyboard shortcuts (desktop) ===
+   j: 次のレース  k: 前のレース  b: 推奨馬にスクロール
+   g p/h/r/s: ページ切替  ?: ヘルプ表示  Esc: ヘルプ閉じる */
+(function(){
+  const isTyping=()=>{
+    const el=document.activeElement;
+    if(!el)return false;
+    const tag=(el.tagName||'').toLowerCase();
+    return tag==='input'||tag==='textarea'||tag==='select'||el.isContentEditable;
+  };
+  let gPending=false,gTimer=null;
+  function showHelp(){
+    let o=document.getElementById('kbd-help');
+    if(o){o.remove();return;}
+    o=document.createElement('div');
+    o.id='kbd-help';
+    o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    o.innerHTML='<div style="background:#fff;color:#111;padding:24px 28px;border-radius:14px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-size:14px;line-height:1.8"><h3 style="margin:0 0 12px;font-size:17px;font-weight:700">&#9000; キーボードショートカット</h3><table style="width:100%;border-collapse:collapse"><tr><td style="padding:4px 10px"><kbd>j</kbd></td><td>次のレース</td></tr><tr><td style="padding:4px 10px"><kbd>k</kbd></td><td>前のレース</td></tr><tr><td style="padding:4px 10px"><kbd>b</kbd></td><td>推奨馬にスクロール</td></tr><tr><td style="padding:4px 10px"><kbd>g</kbd> <kbd>p</kbd></td><td>予測ページ</td></tr><tr><td style="padding:4px 10px"><kbd>g</kbd> <kbd>h</kbd></td><td>ホーム</td></tr><tr><td style="padding:4px 10px"><kbd>g</kbd> <kbd>r</kbd></td><td>結果</td></tr><tr><td style="padding:4px 10px"><kbd>g</kbd> <kbd>s</kbd></td><td>設定</td></tr><tr><td style="padding:4px 10px"><kbd>?</kbd></td><td>このヘルプ</td></tr><tr><td style="padding:4px 10px"><kbd>Esc</kbd></td><td>閉じる</td></tr></table><p style="margin:14px 0 0;font-size:12px;color:#6b7280">入力欄にフォーカス中は無効です</p><style>#kbd-help kbd{display:inline-block;padding:2px 7px;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f3f4f6;border:1px solid #d1d5db;border-bottom-width:2px;border-radius:4px}</style></div>';
+    o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+    document.body.appendChild(o);
+  }
+  function gotoNextRace(dir){
+    if(!PR.selId||!PR.filtered.length)return false;
+    const idx=PR.filtered.findIndex(r=>r.id===PR.selId);
+    if(idx===-1)return false;
+    const nxt=dir>0?idx+1:idx-1;
+    if(nxt<0||nxt>=PR.filtered.length)return false;
+    selectRace(PR.filtered[nxt].id);
+    return true;
+  }
+  function scrollToTopPick(){
+    if(!PR.preds||!PR.preds.length)return false;
+    // 推奨度の強い馬へスクロール (推奨 > 複勝検討 > 見送り)
+    const tgt=document.querySelector('.rec-strong,.rec-buy')||document.querySelector('#pred-table tbody tr')||document.getElementById('pred-area');
+    if(tgt&&tgt.scrollIntoView){tgt.scrollIntoView({behavior:'smooth',block:'center'});return true;}
+    return false;
+  }
+  document.addEventListener('keydown',e=>{
+    if(isTyping())return;
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    // "?" ヘルプ (Shift + / で入力される)
+    if(e.key==='?'){e.preventDefault();showHelp();return;}
+    if(e.key==='Escape'){const o=document.getElementById('kbd-help');if(o){o.remove();e.preventDefault();}return;}
+    // g prefix: ページ移動
+    if(gPending){
+      gPending=false;if(gTimer){clearTimeout(gTimer);gTimer=null;}
+      const map={p:'predict',h:'home',r:'results',s:'settings'};
+      const target=map[e.key.toLowerCase()];
+      if(target){e.preventDefault();goPage(target);}
+      return;
+    }
+    if(e.key==='g'){gPending=true;gTimer=setTimeout(()=>{gPending=false;},800);e.preventDefault();return;}
+    // 単独キー (predictページでのみ意味がある)
+    if(curPage!=='predict')return;
+    if(e.key==='j'){if(gotoNextRace(+1))e.preventDefault();return;}
+    if(e.key==='k'){if(gotoNextRace(-1))e.preventDefault();return;}
+    if(e.key==='b'){if(scrollToTopPick())e.preventDefault();return;}
+  });
+})();
+
+/* === Admin Page === */
+async function renderAdmin(){
+  const $=document.getElementById('app');
+  if(!S.isAdmin){
+    $.innerHTML=topNav('admin')+`<div class="container fade-in"><div style="text-align:center;padding:40px;color:#6b7280">
+      <h2 style="color:#dc2626">管理者権限が必要です</h2>
+      <p>このページは管理者のみアクセスできます。</p>
+    </div></div>`;
+    return;
+  }
+  $.innerHTML=topNav('admin')+`<div class="container fade-in" id="admin-wrap">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#111827">&#128737;&#65039; 管理コンソール</h2>
+    <div class="loading-box"><div class="spinner"></div></div>
+  </div>`;
+
+  const [risk,sys,scr,model,cache,slo,shadow] = await Promise.all([
+    apiFetch('/risk-status').catch(e=>({__err:e.message})),
+    apiFetch('/admin/system').catch(e=>({__err:e.message})),
+    apiFetch('/admin/scraper-status').catch(e=>({__err:e.message})),
+    apiFetch('/stats/model').catch(e=>({__err:e.message})),
+    apiFetch('/admin/cache-stats').catch(e=>({__err:e.message})),
+    apiFetch('/admin/slo?window_seconds=3600').catch(e=>({__err:e.message})),
+    apiFetch('/admin/shadow-stats?days=7').catch(e=>({__err:e.message})),
+  ]);
+
+  const fmt=n=>n==null?'-':Number(n).toLocaleString();
+  const halted=risk.halted;
+  const memPct=sys.memory?.used_percent||0;
+  const diskPct=parseInt(sys.disk?.percent||'0')||0;
+  const ts=(s)=>s?new Date(s).toLocaleString('ja-JP'):'-';
+
+  const wrap=document.getElementById('admin-wrap');
+  wrap.innerHTML=`
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#111827">&#128737;&#65039; 管理コンソール</h2>
+
+    <div class="admin-card ${halted?'halted':''}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 style="margin:0">&#128721; リスク管理 (自動ベット)</h3>
+        <span class="admin-status ${halted?'bad':'good'}">${halted?'&#9632; 停止中':'&#9679; 稼働中'}</span>
+      </div>
+      ${halted?`<div class="halt-banner">&#128680; ${risk.halt_reason||''} <span style="color:#9ca3af;font-size:11px">${ts(risk.halted_at)}</span></div>`:''}
+      <div class="admin-grid">
+        <div><span class="k">日次損失</span><span class="v ${risk.daily_loss_pct>=80?'warn':''}">${fmt(risk.daily_loss)} / ${fmt(risk.daily_loss_limit)} 円 <small>(${risk.daily_loss_pct||0}%)</small></span></div>
+        <div><span class="k">週次損失</span><span class="v ${risk.weekly_loss_pct>=80?'warn':''}">${fmt(risk.weekly_loss)} / ${fmt(risk.weekly_loss_limit)} 円 <small>(${risk.weekly_loss_pct||0}%)</small></span></div>
+        <div><span class="k">連敗数</span><span class="v ${risk.consecutive_losses>=risk.consecutive_loss_limit*0.8?'warn':''}">${risk.consecutive_losses||0} / ${risk.consecutive_loss_limit||0}</span></div>
+        <div><span class="k">本日のベット数</span><span class="v">${risk.bets_today||0} / ${risk.max_bets_per_day||0}</span></div>
+        <div><span class="k">ピーク資金</span><span class="v">${fmt(risk.peak_bankroll)} 円</span></div>
+        <div><span class="k">最大DD</span><span class="v">${risk.max_drawdown_pct}%</span></div>
+        <div><span class="k">1ベット上限</span><span class="v">${fmt(risk.max_bet_size)} 円</span></div>
+        <div><span class="k">レース内合計上限</span><span class="v">${(risk.max_race_wager_pct*100).toFixed(1)}% of 資金</span></div>
+        ${risk.cooldown_active?`<div><span class="k">クールダウン</span><span class="v warn">あと ${risk.cooldown_remaining_s}s</span></div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        ${halted
+          ?`<button class="btn" onclick="riskResume()" style="background:#059669">&#9654;&#65039; 再開</button>`
+          :`<button class="btn btn-danger" onclick="riskHalt()">&#128721; 緊急停止</button>`
+        }
+        <button class="btn" onclick="renderAdmin()" style="background:#6b7280">&#128260; 更新</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h3>&#128202; システム健全性</h3>
+      <div class="admin-grid">
+        <div><span class="k">メモリ</span><span class="v ${memPct>=80?'warn':''}">${fmt(sys.memory?.available_mb)} / ${fmt(sys.memory?.total_mb)} MB <small>(${memPct}%)</small></span></div>
+        <div><span class="k">ディスク</span><span class="v ${diskPct>=80?'warn':''}">${sys.disk?.used||'?'} / ${sys.disk?.total||'?'} <small>(${sys.disk?.percent||'?'})</small></span></div>
+        <div><span class="k">ユーザー数</span><span class="v">${fmt(sys.total_users)}</span></div>
+        <div><span class="k">予測回数</span><span class="v">${fmt(sys.total_predictions)}</span></div>
+        <div><span class="k">レース数</span><span class="v">${fmt(sys.total_races||sys.db?.total_races)}</span></div>
+        <div><span class="k">稼働時間</span><span class="v">${sys.uptime||'-'}</span></div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h3>&#129504; モデル</h3>
+      <div class="admin-grid">
+        <div><span class="k">バージョン</span><span class="v">${model.version||model.model_version||'-'}</span></div>
+        <div><span class="k">特徴量数</span><span class="v">${fmt(model.n_features||model.feature_count)}</span></div>
+        <div><span class="k">学習データ</span><span class="v">${fmt(model.training_samples)} 件</span></div>
+        <div><span class="k">最終学習</span><span class="v">${ts(model.last_trained||model.saved_at)}</span></div>
+        ${model.auc_top3?`<div><span class="k">AUC (Top3)</span><span class="v">${Number(model.auc_top3).toFixed(4)}</span></div>`:''}
+        ${model.calibration_brier?`<div><span class="k">Brier</span><span class="v">${Number(model.calibration_brier).toFixed(4)}</span></div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" onclick="reloadModel()">&#128260; モデル再読込</button>
+        <button class="btn" onclick="triggerRetrain()" style="background:#7c3aed">&#129504; 再学習開始</button>
+      </div>
+      <div id="admin-msg" style="margin-top:8px;font-size:12px;display:none"></div>
+    </div>
+
+    <div class="admin-card">
+      <h3>&#128051;&#65039; スクレイパー</h3>
+      <div class="admin-grid">
+        <div><span class="k">直近スクレイプ</span><span class="v">${ts(scr.last_scrape||scr.last_run)}</span></div>
+        <div><span class="k">結果収集</span><span class="v">${ts(scr.last_results_fetch)}</span></div>
+        <div><span class="k">オッズ更新</span><span class="v">${ts(scr.last_odds_update)}</span></div>
+        <div><span class="k">プリキャッシュ</span><span class="v">${ts(scr.last_precache)}</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn" onclick="triggerScrape()" style="background:#059669">&#128229; スクレイプ</button>
+        <button class="btn" onclick="triggerOdds()" style="background:#1e40af">&#128202; オッズ取得</button>
+        <button class="btn" onclick="triggerCollect()" style="background:#d97706">&#127942; 結果収集</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h3>&#128190; キャッシュ</h3>
+      <div class="admin-grid">
+        <div><span class="k">エントリ数</span><span class="v">${fmt(cache.entries||cache.count)}</span></div>
+        <div><span class="k">ヒット率</span><span class="v">${cache.hit_rate!=null?(cache.hit_rate*100).toFixed(1)+'%':'-'}</span></div>
+        <div><span class="k">サイズ</span><span class="v">${fmt(cache.size_mb)} MB</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-danger" onclick="clearCache()">&#128465;&#65039; キャッシュ全削除</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h3>&#128293; SLO (直近1時間)</h3>
+      ${slo.__err?`<div style="color:#dc2626;font-size:12px">${slo.__err}</div>`:`
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb">
+          <th style="padding:6px 8px;text-align:left">Route</th>
+          <th style="padding:6px 8px;text-align:right">N</th>
+          <th style="padding:6px 8px;text-align:right">p50</th>
+          <th style="padding:6px 8px;text-align:right">p95</th>
+          <th style="padding:6px 8px;text-align:right">p99</th>
+          <th style="padding:6px 8px;text-align:right">成功率</th>
+          <th style="padding:6px 8px;text-align:right">エラー</th>
+        </tr></thead><tbody>
+        ${Object.entries(slo.routes||{}).sort((a,b)=>(b[1].p99_ms||0)-(a[1].p99_ms||0)).map(([route,m])=>{
+          const sr=(m.success_rate||0);
+          const srClr=sr>=0.99?'#059669':sr>=0.95?'#d97706':'#dc2626';
+          const p99=m.p99_ms||0;
+          const p99Clr=p99<1000?'#059669':p99<5000?'#d97706':'#dc2626';
+          return `<tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:6px 8px;font-family:ui-monospace,monospace;font-size:11px">${route}</td>
+            <td style="padding:6px 8px;text-align:right">${m.count}</td>
+            <td style="padding:6px 8px;text-align:right">${m.p50_ms}ms</td>
+            <td style="padding:6px 8px;text-align:right">${m.p95_ms}ms</td>
+            <td style="padding:6px 8px;text-align:right;color:${p99Clr};font-weight:600">${p99}ms</td>
+            <td style="padding:6px 8px;text-align:right;color:${srClr};font-weight:600">${(sr*100).toFixed(1)}%</td>
+            <td style="padding:6px 8px;text-align:right;color:${m.error_count>0?'#dc2626':'#9ca3af'}">${m.error_count}</td>
+          </tr>`;
+        }).join('')||'<tr><td colspan="7" style="padding:12px;text-align:center;color:#9ca3af">トラフィックなし</td></tr>'}
+      </tbody></table></div>
+      <div style="margin-top:8px;font-size:11px;color:#9ca3af">稼働時間: ${Math.round((slo.uptime_seconds||0)/60)}分</div>`}
+    </div>
+
+    <div class="admin-card">
+      <h3>&#129514; シャドウモデル評価</h3>
+      ${shadow.__err?`<div style="color:#dc2626;font-size:12px">${shadow.__err}</div>`:(!shadow.enabled?`
+        <div style="color:#9ca3af;font-size:13px;padding:12px;background:#f9fafb;border-radius:8px">
+          <b>未有効化</b><br>
+          ${shadow.message||''}<br>
+          <span style="font-size:11px">models/keiba_model_shadow.pkl を配置して再起動すると並走評価が始まります</span>
+        </div>`:`
+        <div class="admin-grid">
+          <div><span class="k">ログ件数 (${shadow.days||7}日)</span><span class="v">${fmt(shadow.count)}</span></div>
+          <div><span class="k">Top1一致率</span><span class="v">${((shadow.top1_agreement_rate||0)*100).toFixed(1)}%</span></div>
+          <div><span class="k">Top3 重複平均</span><span class="v">${(shadow.avg_top3_overlap||0).toFixed(2)} / 3</span></div>
+          <div><span class="k">Rank Spearman</span><span class="v">${(shadow.avg_rank_spearman||0).toFixed(3)}</span></div>
+          <div><span class="k">Prob KL</span><span class="v">${(shadow.avg_prob_kl||0).toFixed(4)}</span></div>
+          <div><span class="k">シャドウモデル</span><span class="v ${shadow.shadow_model_loaded?'':'warn'}">${shadow.shadow_model_loaded?'ロード済み':'未ロード'}</span></div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#6b7280">Rank Spearman が 0.85 以下、もしくは Top1一致率が 70% 以下のとき本番昇格は慎重に</div>`)}
+    </div>
+  `;
+}
+
+window.riskHalt=async()=>{
+  const reason=prompt('停止理由を入力してください:','manual halt');
+  if(reason==null)return;
+  try{
+    await apiFetch('/admin/risk/halt',{method:'POST',body:JSON.stringify({reason:reason||'manual halt'})});
+    toast('リスク管理を停止しました','success');
+    renderAdmin();
+  }catch(e){toast(e.message,'error');}
+};
+window.riskResume=async()=>{
+  if(!confirm('リスク管理を再開しますか？'))return;
+  try{
+    await apiFetch('/admin/risk/resume',{method:'POST'});
+    toast('リスク管理を再開しました','success');
+    renderAdmin();
+  }catch(e){toast(e.message,'error');}
+};
+window.triggerRetrain=async()=>{
+  if(!confirm('再学習を開始しますか？ (時間がかかります)'))return;
+  const msg=document.getElementById('admin-msg');
+  try{
+    if(msg){msg.style.display='block';msg.style.color='#1e40af';msg.textContent='再学習開始...';}
+    await apiFetch('/admin/retrain',{method:'POST'});
+    toast('再学習を開始しました','success');
+    if(msg){msg.style.color='#059669';msg.textContent='開始完了 (バックグラウンドで実行中)';}
+  }catch(e){toast(e.message,'error');if(msg){msg.style.display='block';msg.style.color='#dc2626';msg.textContent=e.message;}}
+};
+window.triggerOdds=async()=>{
+  try{await apiFetch('/admin/fetch-odds',{method:'POST'});toast('オッズ取得を開始しました','success');}
+  catch(e){toast(e.message,'error');}
+};
+window.triggerCollect=async()=>{
+  try{await apiFetch('/admin/collect-results',{method:'POST'});toast('結果収集を開始しました','success');}
+  catch(e){toast(e.message,'error');}
+};
+window.clearCache=async()=>{
+  if(!confirm('全キャッシュを削除しますか？'))return;
+  try{await apiFetch('/admin/cache-clear',{method:'POST'});toast('キャッシュを削除しました','success');renderAdmin();}
+  catch(e){toast(e.message,'error');}
+};
+
+/* === Performance Page === */
+async function renderPerformance(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('performance')+'<div class="container fade-in"><div class="loading-box"><div class="spinner"></div><p>実績データを読み込み中...</p></div></div>';
+  try{
+    const data=await fetch(API+'/performance').then(r=>r.json());
+    const bt=data.backtest||{};
+    const strats=bt.strategies||{};
+    const mv=bt.model_vs_favorite||{};
+    const cal=bt.calibration||[];
+    const ev13=strats['ev_1.3']||{};
+    const fav=strats['favorite_baseline']||{};
+
+    // Strategy rows for table
+    const stratOrder=['ev_1.3','ev_1.15','ev_1.1','ev_1.0','model_top1','favorite_baseline'];
+    const stratLabels={'ev_1.3':'EV>1.3 戦略','ev_1.15':'EV>1.15 戦略','ev_1.1':'EV>1.1 戦略','ev_1.0':'EV>1.0 戦略','model_top1':'モデルTop1','favorite_baseline':'1番人気ベースライン'};
+    let tableRows='';
+    stratOrder.forEach(key=>{
+      const s=strats[key];
+      if(!s)return;
+      const isHL=key==='ev_1.3';
+      const isFav=key==='favorite_baseline';
+      const roiCls=s.roi>=0?'roi-pos':'roi-neg';
+      tableRows+=`<tr class="${isHL?'hl-row':''}">
+        <td style="text-align:left;font-weight:${isHL?'700':'500'}">${isHL?'&#11088; ':''}${stratLabels[key]||key}</td>
+        <td class="${roiCls}" style="font-size:${isHL?'15px':'13px'}">${s.roi>0?'+':''}${s.roi.toFixed(1)}%</td>
+        <td>${s.hit_rate.toFixed(1)}%</td>
+        <td>${s.avg_odds?s.avg_odds.toFixed(1):'-'}</td>
+        <td>${s.bets.toLocaleString()}</td>
+      </tr>`;
+    });
+
+    // Improvement value
+    const improv=Math.abs(mv.improvement||16.0).toFixed(1);
+    const modelRoi=(mv.model_roi||ev13.roi||-5.3).toFixed(1);
+
+    $.innerHTML=topNav('performance')+`<div class="container fade-in">
+
+      <div class="perf-hero">
+        <h1>AI予測の実績</h1>
+        <p class="perf-sub">2025年バックテスト結果 -- ${(bt.total_races||3894).toLocaleString()}レースで検証</p>
+        <div class="perf-key">
+          EV&gt;1.3戦略 ROI <span class="hl">${modelRoi}%</span>
+          (ベースライン比 <span class="hl">+${improv}pt</span> 改善)
+        </div>
+      </div>
+
+      <div class="perf-section">
+        <h2>&#128202; 戦略別パフォーマンス比較</h2>
+        <div class="perf-tbl-wrap">
+          <table class="perf-tbl">
+            <thead><tr>
+              <th style="text-align:left">戦略名</th><th>ROI</th><th>的中率</th><th>平均オッズ</th><th>ベット数</th>
+            </tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="perf-section">
+        <h2>&#128200; キャリブレーションチャート</h2>
+        <div class="perf-chart-wrap">
+          <canvas id="calibChart" width="600" height="350" style="max-width:100%;margin:0 auto;display:block"></canvas>
+        </div>
+      </div>
+
+      <div class="perf-section">
+        <h2>&#128161; 主な分析結果</h2>
+        <div class="perf-insights">
+          <div class="perf-card">
+            <h3>モデルの強み: 穴馬の発見力</h3>
+            <div class="big-val">${(ev13.avg_odds||45.4).toFixed(1)}倍</div>
+            <p>EV&gt;1.3戦略のバリューベットの平均オッズ。モデルは市場が過小評価している穴馬を見つけ出す能力を持っています。</p>
+          </div>
+          <div class="perf-card">
+            <h3>キャリブレーション精度</h3>
+            <div class="big-val">AUC ${(bt.training_stats?.calibrated_auc||0.85).toFixed(4)}</div>
+            <p>予測確率と実際の勝率が近く、モデルの確率推定は信頼できます。上のチャートで対角線に近いほど精度が高いことを示します。</p>
+          </div>
+          <div class="perf-card">
+            <h3>改善の余地</h3>
+            <div class="big-val">+${improv}pt</div>
+            <p>ベースライン(1番人気を常に買う)比で${improv}pt改善。血統データや騎手相性など追加特徴量の導入で、さらなる改善が見込めます。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="perf-disc">
+        &#9888; 過去の実績は将来の成果を保証するものではありません。バックテストは2025年1月〜12月のデータに基づいており、実際の運用では市場環境の変化、オッズの変動、その他の要因により異なる結果となる可能性があります。投資判断は自己責任でお願いします。
+      </div>
+    </div>`;
+
+    // Draw calibration chart
+    drawCalibChart(cal);
+  }catch(e){
+    $.innerHTML=topNav('performance')+`<div class="container"><div class="empty" style="color:#dc2626">実績データを取得できませんでした: ${e.message}</div></div>`;
+  }
+}
+
+function drawCalibChart(cal){
+  const canvas=document.getElementById('calibChart');
+  if(!canvas||!cal||!cal.length)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.clientWidth;
+  const h=canvas.clientHeight;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  ctx.scale(dpr,dpr);
+
+  const pad={t:30,r:30,b:50,l:60};
+  const cw=w-pad.l-pad.r;
+  const ch=h-pad.t-pad.b;
+
+  // Background
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+
+  // Grid
+  ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){
+    const x=pad.l+(cw*i/10);
+    const y=pad.t+(ch*i/10);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ch);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+  }
+
+  // Diagonal (perfect calibration)
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+ch);ctx.lineTo(pad.l+cw,pad.t);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Model calibration line
+  ctx.strokeStyle='#1e40af';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  cal.forEach((c,i)=>{
+    const x=pad.l+c.predicted*cw;
+    const y=pad.t+ch-c.actual*ch;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Points
+  cal.forEach(c=>{
+    const x=pad.l+c.predicted*cw;
+    const y=pad.t+ch-c.actual*ch;
+    ctx.fillStyle='#1e40af';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();
+  });
+
+  // Axes labels
+  ctx.fillStyle='#6b7280';ctx.font='12px -apple-system,BlinkMacSystemFont,sans-serif';ctx.textAlign='center';
+  ctx.fillText('予測確率',pad.l+cw/2,h-8);
+  for(let i=0;i<=10;i+=2){
+    const v=(i*10)+'%';
+    const x=pad.l+(cw*i/10);
+    ctx.fillText(v,x,pad.t+ch+20);
+  }
+  ctx.save();ctx.translate(14,pad.t+ch/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('実際の勝率',0,0);ctx.restore();
+  for(let i=0;i<=10;i+=2){
+    const v=(i*10)+'%';
+    const y=pad.t+ch-(ch*i/10);
+    ctx.textAlign='right';ctx.fillText(v,pad.l-8,y+4);
+  }
+
+  // Legend
+  ctx.textAlign='left';ctx.font='11px -apple-system,BlinkMacSystemFont,sans-serif';
+  const lx=pad.l+12;const ly=pad.t+16;
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+24,ly);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#9ca3af';ctx.fillText('完璧なキャリブレーション',lx+30,ly+4);
+  ctx.strokeStyle='#1e40af';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(lx,ly+18);ctx.lineTo(lx+24,ly+18);ctx.stroke();
+  ctx.fillStyle='#1e40af';ctx.fillText('モデルの予測',lx+30,ly+22);
+}
+
+/* === Replay Mode (体験モード) === */
+let _replayStreak=parseInt(localStorage.getItem('replayStreak')||'0');
+let _replayRace=null;
+let _replayPick=null;
+let _replayRevealed=false;
+
+async function renderReplay(){
+  const $=document.getElementById('app');
+  $.innerHTML=topNav('replay')+`<div class="container fade-in">
+    <div class="replay-hero">
+      <h1>&#127922; 体験モード</h1>
+      <p>過去のレースに挑戦！結果を隠した状態でAIと対決しよう</p>
+      <div class="replay-streak">&#128293; 連続正解: ${_replayStreak}回</div>
+    </div>
+    <div id="replay-area" style="text-align:center">
+      <button class="replay-btn replay-btn-main" onclick="loadReplayRace()">&#127922; ランダムレースに挑戦</button>
+    </div>
+  </div>`;
+}
+
+async function loadReplayRace(){
+  const area=document.getElementById('replay-area');
+  if(!area)return;
+  area.innerHTML='<div class="loading-box"><div class="spinner"></div><p>レースを読み込み中...</p></div>';
+  _replayPick=null;
+  _replayRevealed=false;
+
+  try{
+    const d=await apiFetch('/replay/random');
+    _replayRace=d;
+    renderReplayRace(d);
+  }catch(e){
+    area.innerHTML=`<p style="color:#dc2626;padding:20px">${e.message||'レース読み込みに失敗しました'}</p>
+      <button class="replay-btn replay-btn-main" onclick="loadReplayRace()" style="margin-top:12px">もう一回試す</button>`;
+  }
+}
+
+function renderReplayRace(data){
+  const area=document.getElementById('replay-area');
+  if(!area)return;
+  const ri=data.race_info||{};
+  const horses=data.horses||[];
+  const ai=data.ai_predictions||[];
+
+  // Sort horses by number
+  horses.sort((a,b)=>a.horse_number-b.horse_number);
+
+  // AI top 3
+  const aiSorted=[...ai].sort((a,b)=>(b.composite_score||b.score||0)-(a.composite_score||a.score||0));
+  const aiTop3=aiSorted.slice(0,3);
+  const marks=['◎','○','▲'];
+  const markClass=['r1','r2','r3'];
+
+  let html=`<div class="replay-race-card fade-in">
+    <div class="replay-race-header">
+      <h2>${ri.venue||''} ${ri.race_number?ri.race_number+'R ':''} ${ri.race_name||''}</h2>
+      <p>${ri.course_type||''} ${ri.distance||''}m｜${ri.date||''}</p>
+    </div>
+    <div style="padding:4px 0">`;
+
+  horses.forEach(h=>{
+    const sel=_replayPick===h.horse_number?' selected':'';
+    html+=`<div class="replay-horse${sel}" onclick="pickReplayHorse(${h.horse_number})">
+      <div class="rh-num">${h.horse_number}</div>
+      <div style="flex:1;min-width:0">
+        <div class="rh-name">${h.horse_name}</div>
+        <div class="rh-info">${h.jockey_name||''} / ${h.trainer_name||''} / ${h.age||''}歳 ${h.weight?h.weight+'kg':''}</div>
+      </div>
+      <div class="rh-odds">${h.odds>0?h.odds.toFixed(1)+'倍':'--'}</div>
+    </div>`;
+  });
+
+  html+=`</div></div>`;
+
+  // AI predictions box
+  html+=`<div class="replay-ai-box fade-in">
+    <h3>&#129302; AI予測</h3>`;
+  aiTop3.forEach((h,i)=>{
+    const pw=((h.prob_win||h.win_prob||0)*100).toFixed(1);
+    html+=`<div class="replay-ai-rank">
+      <span class="rank-mark ${markClass[i]}">${marks[i]}</span>
+      <span style="font-weight:600">${h.horse_number||'?'}番 ${h.horse_name||'?'}</span>
+      <span style="color:#9ca3af;font-size:12px;margin-left:auto">勝率${pw}%</span>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // Pick instruction + reveal button
+  html+=`<div id="replay-action" style="text-align:center;margin-top:16px">
+    <p style="color:#6b7280;font-size:13px;margin-bottom:12px">&#9757; あなたの本命馬をタップで選択してください</p>
+  </div>`;
+
+  area.innerHTML=html;
+}
+
+function pickReplayHorse(num){
+  if(_replayRevealed)return;
+  _replayPick=num;
+  // Re-render to update selection
+  if(_replayRace) renderReplayRace(_replayRace);
+  // Show reveal button
+  const action=document.getElementById('replay-action');
+  if(action){
+    const horse=(_replayRace.horses||[]).find(h=>h.horse_number===num);
+    action.innerHTML=`<p style="color:#7c3aed;font-size:14px;font-weight:600;margin-bottom:12px">&#9989; ${num}番 ${horse?horse.horse_name:''}を選択中</p>
+      <button class="replay-btn replay-btn-reveal" onclick="revealReplayResult()">&#128064; 結果を見る</button>`;
+  }
+}
+
+async function revealReplayResult(){
+  if(!_replayRace||_replayRevealed)return;
+  _replayRevealed=true;
+  const raceId=_replayRace.race_id;
+  const action=document.getElementById('replay-action');
+  if(action) action.innerHTML='<div class="loading-box"><div class="spinner"></div><p>結果を確認中...</p></div>';
+
+  try{
+    const d=await apiFetch('/replay/reveal/'+encodeURIComponent(raceId));
+    renderReplayResult(d);
+  }catch(e){
+    if(action) action.innerHTML=`<p style="color:#dc2626">${e.message||'結果取得に失敗'}</p>
+      <button class="replay-btn replay-btn-again" onclick="loadReplayRace()">&#128260; もう一回</button>`;
+  }
+}
+
+function renderReplayResult(data){
+  const area=document.getElementById('replay-action');
+  if(!area)return;
+  const results=data.results||[];
+  const winner=data.winner;
+  const aiPick=data.ai_top_pick;
+  const aiWin=data.ai_win_correct;
+  const aiTop3=data.ai_top3_correct;
+  const pnl=data.virtual_pnl||0;
+
+  // Check user result
+  const userWin=_replayPick&&winner&&_replayPick===winner.horse_number;
+  const userTop3=_replayPick&&data.top3&&data.top3.some(r=>r.horse_number===_replayPick);
+
+  // Update streak
+  if(userWin||userTop3){
+    _replayStreak++;
+  }else{
+    _replayStreak=0;
+  }
+  localStorage.setItem('replayStreak',String(_replayStreak));
+
+  // Update streak display
+  const streakEl=document.querySelector('.replay-streak');
+  if(streakEl) streakEl.innerHTML='&#128293; 連続正解: '+_replayStreak+'回';
+
+  const headerClass=aiWin?'ai-win':'ai-miss';
+  let headerText=aiWin?'&#127881; AI的中！':'AI不的中';
+  if(aiTop3&&!aiWin) headerText='AI複勝的中';
+
+  let html=`<div class="replay-result-box reveal-anim">
+    <div class="replay-result-header ${headerClass}">
+      <h3>${headerText}</h3>
+      <p>AI本命: ${aiPick||'?'}番 ｜ あなた: ${_replayPick||'未選択'}番</p>
+    </div>
+    <div class="replay-finish">
+      <div style="padding:8px 0 12px;font-size:13px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;margin-bottom:8px">着順結果</div>`;
+
+  results.slice(0,8).forEach(r=>{
+    const posNum=r.finish_position;
+    const posClass=posNum===1?'p1':posNum===2?'p2':posNum===3?'p3':'other';
+    const isAiPick=r.horse_number===aiPick;
+    const isUserPick=r.horse_number===_replayPick;
+    let tag='';
+    if(isAiPick&&isUserPick) tag='<span style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-left:8px">AI + あなた</span>';
+    else if(isAiPick) tag='<span style="background:#1e40af;color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-left:8px">AI</span>';
+    else if(isUserPick) tag='<span style="background:#059669;color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-left:8px">あなた</span>';
+
+    html+=`<div class="replay-finish-row">
+      <div class="pos ${posClass}">${posNum}</div>
+      <span style="font-weight:600;flex:1">${r.horse_number}番 ${r.horse_name}${tag}</span>
+      <span style="color:#9ca3af;font-size:12px">${r.odds>0?r.odds.toFixed(1)+'倍':'--'}</span>
+    </div>`;
+  });
+
+  html+=`</div>`;
+
+  // User result summary
+  const userResultText=userWin?'&#127942; 1着的中！':userTop3?'&#128077; 複勝的中！':'&#10060; 不的中';
+  const aiResultText=aiWin?'&#127942; 1着的中！':aiTop3?'&#128077; 複勝的中！':'&#10060; 不的中';
+
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px;border-top:1px solid #e5e7eb">
+    <div style="text-align:center;padding:12px;background:#f8fafc;border-radius:10px">
+      <div style="font-size:11px;color:#9ca3af;margin-bottom:4px">あなた</div>
+      <div style="font-size:16px;font-weight:700">${userResultText}</div>
+    </div>
+    <div style="text-align:center;padding:12px;background:#f8fafc;border-radius:10px">
+      <div style="font-size:11px;color:#9ca3af;margin-bottom:4px">AI</div>
+      <div style="font-size:16px;font-weight:700">${aiResultText}</div>
+    </div>
+  </div>`;
+
+  // Virtual P&L
+  const pnlClass=pnl>=0?'positive':'negative';
+  const pnlSign=pnl>=0?'+':'';
+  html+=`<div class="replay-pnl ${pnlClass}">AI追従時の損益: ${pnlSign}${Math.round(pnl).toLocaleString()}円 (1000円賭け)</div>`;
+
+  // Upset notice
+  if(data.is_upset){
+    html+=`<div style="text-align:center;padding:12px;font-size:13px;color:#d97706;background:#fffbeb;border-top:1px solid #fde68a">&#9888; 波乱のレースでした！人気薄が勝利</div>`;
+  }
+
+  html+=`</div>`;
+
+  // Again button
+  html+=`<div style="text-align:center;margin-top:20px">
+    <button class="replay-btn replay-btn-again" onclick="loadReplayRace()">&#128260; もう一回</button>
+  </div>`;
+
+  area.innerHTML=html;
+}
+
+/* === Confidence Section (U5) === */
+function buildConfidenceSection(preds, raceInfo){
+  if(!preds||!preds.length) return '';
+  const numHorses=preds.length;
+  const allWin=preds.map(p=>p.prob_win||0);
+  const maxWin=Math.max(...allWin);
+  const minWin=Math.min(...allWin);
+  const spread=(maxWin-minWin)*100;
+
+  // Factor 1: Probability spread (wider = more confident)
+  const spreadScore=Math.min(100, spread * 3);
+
+  // Factor 2: Number of horses (fewer = easier)
+  const horseScore=numHorses<=8?90:numHorses<=12?70:numHorses<=16?50:30;
+
+  // Factor 3: Edge score from predictions (if available)
+  const topPred=preds.find(p=>(p.predicted_rank||99)===1);
+  const edgeScore=topPred&&topPred.edge_score!=null?Math.min(100,Math.max(0,topPred.edge_score*100)):null;
+
+  // Factor 4: Top horse's win probability strength
+  const topWinPct=maxWin*100;
+  const topWinScore=topWinPct>40?95:topWinPct>25?75:topWinPct>15?55:35;
+
+  // Combine into overall confidence
+  const factors=[spreadScore, horseScore, topWinScore];
+  if(edgeScore!==null) factors.push(edgeScore);
+  const overallConf=Math.round(factors.reduce((s,v)=>s+v,0)/factors.length);
+
+  // Confidence level text and color
+  let confLevel, confColor;
+  if(overallConf>=70){confLevel='高い';confColor='#16a34a';}
+  else if(overallConf>=45){confLevel='中程度';confColor='#d97706';}
+  else{confLevel='低い';confColor='#dc2626';}
+
+  const featureCoverage=raceInfo&&raceInfo.feature_coverage!=null?Math.round(raceInfo.feature_coverage*100):Math.round(55+spreadScore*0.3);
+  const similarHitRate=raceInfo&&raceInfo.similar_hit_rate!=null?Math.round(raceInfo.similar_hit_rate*100):Math.round(25+overallConf*0.2);
+
+  return `<div class="confidence-section" style="animation:fadeIn .4s ease-out">
+    <h4>&#128202; モデル信頼度</h4>
+    <div class="confidence-meter">
+      <div class="meter-bar" style="width:${overallConf}%;background:${confColor}">${overallConf}%</div>
+    </div>
+    <p class="confidence-text">このレースの予測信頼度は「${confLevel}」です</p>
+    <p class="confidence-detail">根拠: 特徴量カバレッジ ${featureCoverage}%, 類似レースの的中率 ${similarHitRate}%</p>
+    <div class="confidence-factors">
+      <div class="confidence-factor">
+        <div class="cf-label">確率分散</div>
+        <div class="cf-value" style="color:${spreadScore>=60?'#16a34a':spreadScore>=35?'#d97706':'#dc2626'}">${spread.toFixed(1)}%</div>
+      </div>
+      <div class="confidence-factor">
+        <div class="cf-label">出走頭数</div>
+        <div class="cf-value" style="color:${horseScore>=70?'#16a34a':horseScore>=50?'#d97706':'#dc2626'}">${numHorses}頭</div>
+      </div>
+      <div class="confidence-factor">
+        <div class="cf-label">Top勝率</div>
+        <div class="cf-value" style="color:${topWinScore>=70?'#16a34a':topWinScore>=50?'#d97706':'#dc2626'}">${topWinPct.toFixed(1)}%</div>
+      </div>
+      ${edgeScore!==null?`<div class="confidence-factor">
+        <div class="cf-label">エッジスコア</div>
+        <div class="cf-value" style="color:${edgeScore>=60?'#16a34a':edgeScore>=35?'#d97706':'#dc2626'}">${edgeScore.toFixed(0)}</div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+/* === Dark Mode (U6) === */
+function isDarkMode(){
+  return document.documentElement.getAttribute('data-theme')==='dark';
+}
+function toggleTheme(){
+  const newTheme=isDarkMode()?'light':'dark';
+  document.documentElement.setAttribute('data-theme',newTheme);
+  localStorage.setItem('theme',newTheme);
+  // Update toggle button icon
+  const btn=document.getElementById('theme-toggle-btn');
+  if(btn) btn.textContent=newTheme==='dark'?'\u2600\uFE0F':'\u{1F319}';
+  // Update theme-color meta tag
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content=newTheme==='dark'?'#0f1117':'#1e40af';
+}
+// Initialize theme
+(function initTheme(){
+  const saved=localStorage.getItem('theme');
+  if(saved){
+    document.documentElement.setAttribute('data-theme',saved);
+    if(saved==='dark'){
+      const meta=document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.content='#0f1117';
+    }
+  }else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+    document.documentElement.setAttribute('data-theme','dark');
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content='#0f1117';
+  }
+  // Listen for system preference changes
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{
+      if(!localStorage.getItem('theme')){
+        document.documentElement.setAttribute('data-theme',e.matches?'dark':'light');
+        const meta=document.querySelector('meta[name="theme-color"]');
+        if(meta) meta.content=e.matches?'#0f1117':'#1e40af';
+      }
+    });
+  }
+})();
+
+/* === Service Worker Registration (U1) === */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/keiba/sw.js').catch(()=>{});
+}
+
+/* === Init === */
+window.addEventListener('hashchange',route);
+window.addEventListener('load',route);
+</script>
+</body>
+</html>

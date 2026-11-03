@@ -1,0 +1,14 @@
+{
+  "name": "競馬AI予測",
+  "short_name": "競馬AI",
+  "description": "AIで競馬を科学する",
+  "start_url": "/keiba/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#1e40af",
+  "icons": [
+    {"src": "/keiba/icon.svg", "sizes": "any", "type": "image/svg+xml"},
+    {"src": "/keiba/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/keiba/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

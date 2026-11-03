@@ -1,0 +1,40 @@
+# --- secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# --- data / runtime ---
+*.db
+*.db-*
+*.sqlite*
+data/
+logs/
+output/
+*.log
+*.pkl
+*.csv
+*.zip
+*.tar.gz
+# --- deps / build ---
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.next/
+dist/
+build/
+*.tsbuildinfo
+# --- tools / os ---
+.claude/
+.omc/
+.coverage
+*.bak
+*.bak_*
+.DS_Store
+models/
+catboost_info/
+backups/
+static/download/

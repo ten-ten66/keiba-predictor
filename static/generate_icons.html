@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Icon Generator - 競馬AI</title>
+<style>
+body{font-family:sans-serif;text-align:center;padding:40px;background:#f8f9fa}
+canvas{border:1px solid #ccc;margin:12px;border-radius:12px}
+button{background:#1e40af;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;margin:8px}
+button:hover{background:#1e3a8a}
+h1{color:#1e40af}
+</style>
+</head>
+<body>
+<h1>競馬AI アイコン生成</h1>
+<p>下のアイコンを右クリック (または長押し) して画像を保存してください。</p>
+<div>
+  <h3>192x192</h3>
+  <canvas id="c192" width="192" height="192"></canvas>
+  <br><button onclick="download('c192','icon-192.png')">icon-192.png ダウンロード</button>
+</div>
+<div>
+  <h3>512x512</h3>
+  <canvas id="c512" width="512" height="512"></canvas>
+  <br><button onclick="download('c512','icon-512.png')">icon-512.png ダウンロード</button>
+</div>
+<script>
+function drawIcon(id, size) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  // Blue circle background
+  const cx = size / 2, cy = size / 2, r = size / 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e40af';
+  ctx.fill();
+  // Inner lighter ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.88, 0, Math.PI * 2);
+  ctx.fillStyle = '#2563eb';
+  ctx.fill();
+  // Emoji
+  const fontSize = Math.round(size * 0.45);
+  ctx.font = fontSize + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\u{1F3C7}', cx, cy + size * 0.02);
+  // "AI" text below emoji
+  const textSize = Math.round(size * 0.14);
+  ctx.font = 'bold ' + textSize + 'px -apple-system, sans-serif';
+  ctx.fillStyle = '#fff';
+  ctx.fillText('AI', cx, cy + size * 0.32);
+}
+drawIcon('c192', 192);
+drawIcon('c512', 512);
+
+function download(canvasId, filename) {
+  const c = document.getElementById(canvasId);
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = c.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>

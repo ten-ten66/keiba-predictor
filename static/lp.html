@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>競馬AI予測 - 機械学習で競馬を科学する</title>
+<meta name="description" content="最先端の機械学習技術を活用した競馬AI予測システム。リアルタイムオッズ分析、ペース分析、血統分析で的中率を向上。無料で予測をお試しいただけます。">
+<meta name="keywords" content="競馬AI,競馬予測,機械学習,AI予想,競馬予想,リアルタイムオッズ,ペース分析,血統分析">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://your-domain.example/keiba/">
+
+<!-- OGP -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="競馬AI予測 - 機械学習で競馬を科学する">
+<meta property="og:description" content="最先端の機械学習技術を活用した競馬AI予測。リアルタイムオッズ、ペース分析、血統データで高精度な予測を実現。">
+<meta property="og:url" content="https://your-domain.example/keiba/">
+<meta property="og:site_name" content="競馬AI予測">
+<meta property="og:locale" content="ja_JP">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="競馬AI予測 - 機械学習で競馬を科学する">
+<meta name="twitter:description" content="機械学習で競馬を科学。リアルタイムオッズ分析、ペース予測、血統分析を統合したAI予測システム。">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --card:#141420;
+  --border:#1e1e35;
+  --text:#e4e4ef;
+  --muted:#8888aa;
+  --accent:#6366f1;
+  --accent2:#818cf8;
+  --green:#22c55e;
+  --gold:#f59e0b;
+  --red:#ef4444;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  overflow-x:hidden;
+}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Hero */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:40px 20px;
+  background:radial-gradient(ellipse at 50% 20%,rgba(99,102,241,0.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 80%,rgba(34,197,94,0.08) 0%,transparent 50%),
+             var(--bg);
+  position:relative;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(99,102,241,0.15);
+  border:1px solid rgba(99,102,241,0.3);
+  border-radius:100px;
+  padding:6px 18px;
+  font-size:13px;
+  color:var(--accent2);
+  margin-bottom:32px;
+}
+.hero-badge .dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{
+  font-size:clamp(28px,5vw,56px);
+  font-weight:800;
+  line-height:1.2;
+  margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 30%,var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero .sub{
+  font-size:clamp(15px,2vw,20px);
+  color:var(--muted);
+  max-width:600px;
+  margin:0 auto 40px;
+}
+.cta-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  justify-content:center;
+}
+.btn-primary{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:linear-gradient(135deg,var(--accent),#4f46e5);
+  color:#fff;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 36px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  text-decoration:none;
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(99,102,241,0.35);
+  text-decoration:none;
+}
+.btn-secondary{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:transparent;
+  color:var(--text);
+  font-size:16px;
+  font-weight:600;
+  padding:15px 32px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:border-color .15s;
+  text-decoration:none;
+}
+.btn-secondary:hover{border-color:var(--accent);text-decoration:none}
+.hero-stats{
+  display:flex;
+  gap:40px;
+  margin-top:60px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.hero-stat{text-align:center}
+.hero-stat .num{
+  font-size:28px;
+  font-weight:800;
+  color:#fff;
+}
+.hero-stat .label{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+/* Section */
+section{padding:80px 20px}
+.container{max-width:1100px;margin:0 auto}
+.section-title{
+  text-align:center;
+  font-size:clamp(22px,3vw,36px);
+  font-weight:800;
+  margin-bottom:16px;
+}
+.section-sub{
+  text-align:center;
+  color:var(--muted);
+  font-size:16px;
+  margin-bottom:48px;
+  max-width:600px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Features */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:24px;
+}
+.feature-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px;
+  transition:border-color .2s,transform .2s;
+}
+.feature-card:hover{
+  border-color:var(--accent);
+  transform:translateY(-4px);
+}
+.feature-icon{
+  width:48px;height:48px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  margin-bottom:20px;
+}
+.feature-card h3{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+.feature-card p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.8;
+}
+.fi-ai{background:rgba(99,102,241,0.15)}
+.fi-odds{background:rgba(34,197,94,0.15)}
+.fi-pace{background:rgba(245,158,11,0.15)}
+.fi-blood{background:rgba(239,68,68,0.15)}
+.fi-weather{background:rgba(59,130,246,0.15)}
+.fi-speed{background:rgba(168,85,247,0.15)}
+
+/* Performance */
+.perf-section{
+  background:linear-gradient(180deg,rgba(99,102,241,0.05),transparent);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.perf-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  margin-bottom:40px;
+}
+.perf-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  text-align:center;
+}
+.perf-card .value{
+  font-size:32px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.perf-card .desc{
+  font-size:13px;
+  color:var(--muted);
+}
+.perf-note{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  background:rgba(255,255,255,0.03);
+  border-radius:10px;
+  padding:16px;
+}
+
+/* CTA Section */
+.cta-section{
+  text-align:center;
+}
+.cta-box{
+  background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(34,197,94,0.08));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:60px 40px;
+  max-width:700px;
+  margin:0 auto;
+}
+.cta-box h2{
+  font-size:clamp(20px,3vw,30px);
+  font-weight:800;
+  margin-bottom:16px;
+}
+.cta-box p{
+  color:var(--muted);
+  margin-bottom:32px;
+  font-size:15px;
+}
+
+/* How it works */
+.steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:32px;
+  counter-reset:step;
+}
+.step{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:32px;
+  counter-increment:step;
+}
+.step::before{
+  content:counter(step);
+  position:absolute;
+  top:-14px;left:24px;
+  width:28px;height:28px;
+  background:var(--accent);
+  color:#fff;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;
+}
+.step h3{margin-bottom:10px;font-size:16px}
+.step p{color:var(--muted);font-size:14px}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--border);
+  padding:40px 20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* Responsive */
+@media(max-width:640px){
+  .hero{padding:60px 16px 40px}
+  .hero-stats{gap:24px}
+  .hero-stat .num{font-size:22px}
+  section{padding:60px 16px}
+  .cta-box{padding:40px 20px}
+  .features-grid{grid-template-columns:1fr}
+}
+</style>
+
+<!-- JSON-LD structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "競馬AI予測",
+  "description": "機械学習技術を活用した競馬AI予測システム。リアルタイムオッズ分析、ペース分析、血統分析で的中率を向上。",
+  "url": "https://your-domain.example/keiba/",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY",
+    "description": "無料プランあり"
+  },
+  "inLanguage": "ja"
+}
+</script>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    リアルタイム稼働中
+  </div>
+  <h1>機械学習で<br>競馬を科学する</h1>
+  <p class="sub">
+    20年分のレースデータと最先端のAIが、リアルタイムオッズ・ペース分析・血統データを統合。
+    データに基づいた予測で、あなたの競馬体験を変えます。
+  </p>
+  <div class="cta-group">
+    <a href="/keiba/" class="btn-primary">無料で予測を見る</a>
+    <a href="/keiba/#replay" class="btn-secondary">まずは過去レースで体験</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">20年+</div>
+      <div class="label">学習データ</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">50万+</div>
+      <div class="label">分析レース数</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">6種</div>
+      <div class="label">分析エンジン</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section>
+  <div class="container">
+    <h2 class="section-title">6つの分析エンジン</h2>
+    <p class="section-sub">複数のAIモデルが連携し、多角的にレースを分析します</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon fi-ai">&#129302;</div>
+        <h3>AI予測エンジン</h3>
+        <p>LightGBM + ニューラルネットワークのアンサンブルモデルが、200以上の特徴量から勝率・複勝率を算出。ベイズ最適化でハイパーパラメータを自動調整。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-odds">&#128200;</div>
+        <h3>リアルタイムオッズ分析</h3>
+        <p>レース直前までオッズを自動取得。AI確率と市場オッズを比較し、期待値の高い「バリューベット」を自動検出します。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-pace">&#9201;</div>
+        <h3>ペース分析</h3>
+        <p>出走馬の脚質を自動分類し、レースペースを予測。ハイペース・スローペースに応じた有利不利を的中率に反映。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-blood">&#129516;</div>
+        <h3>血統分析</h3>
+        <p>種牡馬・母父の距離適性、馬場適性、コース適性を数値化。血統から表現型特性を推定し、条件替わりの好走を予測。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-weather">&#127782;</div>
+        <h3>気象・馬場連動</h3>
+        <p>天気予報APIと連携し、馬場状態の変化をリアルタイムで反映。雨の日の得意馬を自動的にピックアップ。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-speed">&#9889;</div>
+        <h3>スピード指数</h3>
+        <p>タイム・馬場差・ペースを補正した独自スピード指数を算出。異なる条件のレースでも正確な能力比較が可能。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Performance -->
+<section class="perf-section">
+  <div class="container">
+    <h2 class="section-title">パフォーマンス実績</h2>
+    <p class="section-sub">バックテストに基づく検証済みの戦略パフォーマンス</p>
+
+    <div class="perf-cards">
+      <div class="perf-card">
+        <div class="value" style="color:var(--green)">+16pt</div>
+        <div class="desc">ベースライン比<br>ROI改善</div>
+      </div>
+      <div class="perf-card">
+        <div class="value" style="color:var(--accent2)">EV&gt;1.3</div>
+        <div class="desc">バリューベット<br>検出戦略</div>
+      </div>
+      <div class="perf-card">
+        <div class="value" style="color:var(--gold)">-5.3%</div>
+        <div class="desc">EV&gt;1.3戦略<br>ROI</div>
+      </div>
+      <div class="perf-card">
+        <div class="value" style="color:#fff">24/7</div>
+        <div class="desc">リアルタイム<br>自動分析</div>
+      </div>
+    </div>
+
+    <div class="perf-note">
+      ※ ROI -5.3% は EV&gt;1.3 戦略のバックテスト結果です。一般的な競馬の控除率（約25%）に対し、ベースライン比+16ポイントの改善を実現。
+      過去のパフォーマンスは将来の結果を保証するものではありません。
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section>
+  <div class="container">
+    <h2 class="section-title">使い方はかんたん</h2>
+    <p class="section-sub">3ステップで今すぐAI予測を活用できます</p>
+
+    <div class="steps">
+      <div class="step">
+        <h3>無料アカウント作成</h3>
+        <p>メールアドレスとパスワードだけで登録完了。クレジットカードは不要です。</p>
+      </div>
+      <div class="step">
+        <h3>レースを選ぶ</h3>
+        <p>当日のレース一覧からAI予測を確認。バリューベット検出で狙い目が一目瞭然。</p>
+      </div>
+      <div class="step">
+        <h3>AIの推奨に沿って購入</h3>
+        <p>単勝・複勝・馬連・三連複の推奨買い目とケリー基準に基づく適正金額を表示。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Replay CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box">
+      <h2>まずは過去レースで体験</h2>
+      <p>
+        会員登録なしで「体験モード」をお試しいただけます。<br>
+        ランダムに選ばれた過去レースでAI予測の精度を実感してください。
+      </p>
+      <a href="/keiba/#replay" class="btn-primary">体験モードを開始する</a>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box" style="background:linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.05))">
+      <h2>データに基づいた競馬を始めよう</h2>
+      <p>
+        AI予測・リアルタイムオッズ・ペース分析を無料でお試しいただけます。<br>
+        今すぐ始めて、次のレースに備えましょう。
+      </p>
+      <div class="cta-group">
+        <a href="/keiba/" class="btn-primary">無料で予測を見る</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 競馬AI予測 - 機械学習で競馬を科学する</p>
+    <p style="margin-top:8px">※ 本サービスは情報提供を目的としたものであり、馬券の購入を推奨するものではありません。</p>
+  </div>
+</footer>
+
+</body>
+</html>

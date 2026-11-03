@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <circle cx="256" cy="256" r="256" fill="#1e40af"/>
+  <circle cx="256" cy="256" r="225" fill="#2563eb"/>
+  <text x="256" y="240" text-anchor="middle" font-size="200" dominant-baseline="central">&#x1F3C7;</text>
+  <text x="256" y="400" text-anchor="middle" font-size="80" font-weight="bold" fill="white" font-family="sans-serif">AI</text>
+</svg>

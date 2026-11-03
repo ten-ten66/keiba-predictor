@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+data/*.csv
+data/*.csv.bak*
+local_training/
+static/keiba*.zip
+static/keiba*.tar.gz
