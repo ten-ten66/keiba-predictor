@@ -1,5 +1,7 @@
 # keiba-predictor — 競馬AI予測システム
 
+[![CI](https://github.com/ten-ten66/keiba-predictor/actions/workflows/ci.yml/badge.svg)](https://github.com/ten-ten66/keiba-predictor/actions/workflows/ci.yml)
+
 > 本プロジェクトは **Claude Code を用いたAI駆動開発** で設計・実装しました。
 
 JRA のレースデータから勝率・期待値（EV）を予測する機械学習システムです。
@@ -84,7 +86,7 @@ flowchart LR
 git clone https://github.com/ten-ten66/keiba-predictor.git
 cd keiba-predictor
 python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt          # TabNet を使う学習は requirements-train.txt も
 
 cp .env.example .env   # KEIBA_JWT_SECRET / KEIBA_ADMIN_PASSWORD などを設定
 export $(grep -v "^#" .env | xargs)
@@ -93,8 +95,8 @@ export $(grep -v "^#" .env | xargs)
 uvicorn api_server:app --host 127.0.0.1 --port 8000
 # → http://127.0.0.1:8000/api/health
 
-# テスト（test_api.py は起動中のサーバーが必要）
-pytest tests/ -v
+# テスト（test_api.py は起動中のサーバーが必要なので CI では除外）
+pytest tests -q --ignore=tests/test_api.py
 ```
 
 学習はローカル GPU 環境で行う想定です（[`local_training/README.txt`](local_training/README.txt)）。
